@@ -1147,7 +1147,29 @@ void gtk_sat_module_popup(GtkSatModule * module)
     g_signal_connect(menuitem, "activate", G_CALLBACK(autotrack_cb), module);
 
     /* select satellite submenu */
-    menuitem = gtk_menu_item_new_with_label(_("Select satellite"));
+    menuitem = gtk_menu_item_new_with_label(_("Select first satellite"));
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
+
+    satsubmenu = gtk_menu_new();
+    gtk_menu_item_set_submenu(GTK_MENU_ITEM(menuitem), satsubmenu);
+
+    sats = g_hash_table_get_values(module->satellites);
+    sats = g_list_sort(sats, (GCompareFunc) sat_nickname_compare);
+
+    n = g_list_length(sats);
+    for (i = 0; i < n; i++)
+    {
+        sat = SAT(g_list_nth_data(sats, i));
+        menuitem = gtk_menu_item_new_with_label(sat->nickname);
+        g_object_set_data(G_OBJECT(menuitem), "catnum",
+                          GINT_TO_POINTER(sat->tle.catnr));
+        g_signal_connect(menuitem, "activate", G_CALLBACK(sat_selected_cb),
+                         module);
+        gtk_menu_shell_append(GTK_MENU_SHELL(satsubmenu), menuitem);
+    }
+
+    /* select satellite submenu */
+    menuitem = gtk_menu_item_new_with_label(_("Select second satellite"));
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
 
     satsubmenu = gtk_menu_new();
