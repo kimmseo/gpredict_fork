@@ -1513,6 +1513,33 @@ void gtk_sat_module_select_sat(GtkSatModule * module, gint catnum)
         gtk_rot_ctrl_select_sat(GTK_ROT_CTRL(module->rotctrl), catnum);
 }
 
+/** Select a new second satellite */
+void gtk_sat_module_select_sat_second(GtkSatModule * module, gint catnum)
+{
+    GtkWidget      *child;
+    guint           i;
+
+    module->target2 = catnum;
+
+    /*
+    // select satellite in each view
+    for (i = 0; i < module->nviews; i++)
+    {
+        child = GTK_WIDGET(g_slist_nth_data(module->views, i));
+
+        if (IS_GTK_SINGLE_SAT(G_OBJECT(child)))
+        {
+            gtk_single_sat_select_sat(child, catnum);
+        }
+        else
+        {
+            sat_log_log(SAT_LOG_LEVEL_DEBUG, _("%s: Is not second singel sat view"),
+                        __func__);
+        }
+    }
+    */
+}
+
 /**
  * Re-configure module.
  *

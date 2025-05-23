@@ -640,7 +640,7 @@ static void screen_state_cb(GtkWidget * menuitem, gpointer data)
 }
 
 /**
- * New satellite selected.
+ * New first satellite selected.
  *
  * @param data Pointer to the GtkSatModule widget
  * 
@@ -659,6 +659,28 @@ static void sat_selected_cb(GtkWidget * menuitem, gpointer data)
     catnum = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(menuitem), "catnum"));
     module = GTK_SAT_MODULE(data);
     gtk_sat_module_select_sat(module, catnum);
+}
+
+/**
+ * New second satellite selected.
+ *
+ * @param data Pointer to the GtkSatModule widget
+ * 
+ * This menu item is activated when a new satellite is selected in the 
+ * "Select satellite" submenu of the module pop-up. This will trigger a call
+ * to the select_sat() fuinction of the module, which in turn will call the
+ * select_sat() function of each child view.
+ * 
+ * The catalog number of the selected satellite is attached to the menu item
+ */
+static void sat_selected_cb_second(GtkWidget * menuitem, gpointer data)
+{
+    gint            catnum;
+    GtkSatModule   *module;
+
+    catnum = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(menuitem), "catnum"));
+    module = GTK_SAT_MODULE(data);
+    gtk_sat_module_select_sat_second(module, catnum);
 }
 
 /** Ensure that deleted top-level windows are destroyed */
@@ -1146,7 +1168,7 @@ void gtk_sat_module_popup(GtkSatModule * module)
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
     g_signal_connect(menuitem, "activate", G_CALLBACK(autotrack_cb), module);
 
-    /* select satellite submenu */
+    /* first select satellite submenu */
     menuitem = gtk_menu_item_new_with_label(_("Select first satellite"));
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
 
@@ -1168,7 +1190,7 @@ void gtk_sat_module_popup(GtkSatModule * module)
         gtk_menu_shell_append(GTK_MENU_SHELL(satsubmenu), menuitem);
     }
 
-    /* select satellite submenu */
+    /* second select satellite submenu */
     menuitem = gtk_menu_item_new_with_label(_("Select second satellite"));
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
 
@@ -1185,7 +1207,7 @@ void gtk_sat_module_popup(GtkSatModule * module)
         menuitem = gtk_menu_item_new_with_label(sat->nickname);
         g_object_set_data(G_OBJECT(menuitem), "catnum",
                           GINT_TO_POINTER(sat->tle.catnr));
-        g_signal_connect(menuitem, "activate", G_CALLBACK(sat_selected_cb),
+        g_signal_connect(menuitem, "activate", G_CALLBACK(sat_selected_cb_second),
                          module);
         gtk_menu_shell_append(GTK_MENU_SHELL(satsubmenu), menuitem);
     }

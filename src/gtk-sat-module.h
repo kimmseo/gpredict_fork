@@ -114,6 +114,7 @@ struct _gtk_sat_module {
 
     /* auto-tracking */
     gint            target;     /*!< Target satellite */
+    gint            target2;    /*!< Second target satellite */
     gboolean        autotrack;  /*!< Whether automatic tracking is enabled */
 
     /* location structure */
