@@ -64,7 +64,8 @@ const gchar    *SINGLE_SAT_FIELD_TITLE[SINGLE_SAT_FIELD_NUMBER] = {
     N_("Mean Anom."),
     N_("Orbit Phase"),
     N_("Orbit Num."),
-    N_("Visibility")
+    N_("Visibility"),
+    N_("SKR")
 };
 
 /* Column title hints indexed with column symb. refs. */
@@ -91,7 +92,8 @@ const gchar    *SINGLE_SAT_FIELD_HINT[SINGLE_SAT_FIELD_NUMBER] = {
     N_("Mean Anomaly"),
     N_("Orbit Phase"),
     N_("Orbit Number"),
-    N_("Visibility of the satellite")
+    N_("Visibility of the satellite"),
+    N_("Secret Key Rate")
 };
 
 static GtkBoxClass *parent_class = NULL;
@@ -140,6 +142,7 @@ static void update_field(GtkSingleSat * ssat, guint i)
     gchar          *fmtstr;
     gchar          *alstr;
     sat_vis_t       vis;
+    gdouble         skr;
 
     /* make some sanity checks */
     if (ssat->labels[i] == NULL)
@@ -362,6 +365,9 @@ static void update_field(GtkSingleSat * ssat, guint i)
     case SINGLE_SAT_FIELD_VISIBILITY:
         vis = get_sat_vis(sat, ssat->qth, sat->jul_utc);
         buff = vis_to_str(vis);
+        break;
+    case SINGLE_SAT_FIELD_SKR:
+        buff = g_strdup_printf("%d", 0);
         break;
     default:
         sat_log_log(SAT_LOG_LEVEL_ERROR,

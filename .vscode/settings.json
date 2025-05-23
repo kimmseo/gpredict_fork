@@ -1,0 +1,9 @@
+{
+    "files.associations": {
+        "sat-vis.h": "c",
+        "sgp4sdp4.h": "c",
+        "mod-mgr.h": "c",
+        "gtk-sat-module.h": "c",
+        "gtk-sat-module-popup.h": "c"
+    }
+}
