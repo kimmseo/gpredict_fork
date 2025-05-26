@@ -1533,15 +1533,14 @@ void gtk_sat_module_select_sat_second(GtkSatModule * module, gint catnum)
 
     module->target2 = catnum;
 
-    /*
     // select satellite in each view
     for (i = 0; i < module->nviews; i++)
     {
         child = GTK_WIDGET(g_slist_nth_data(module->views, i));
 
-        if (IS_GTK_SINGLE_SAT(G_OBJECT(child)))
+        if (IS_GTK_SECOND_SAT(child))
         {
-            gtk_single_sat_select_sat(child, catnum);
+            gtk_second_sat_select_sat(child, catnum);
         }
         else
         {
@@ -1549,7 +1548,7 @@ void gtk_sat_module_select_sat_second(GtkSatModule * module, gint catnum)
                         __func__);
         }
     }
-    */
+
 }
 
 /**
