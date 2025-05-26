@@ -124,6 +124,8 @@ static void update_field(GtkSecondSat * ssat, guint i)
     sat_vis_t       vis;
     gdouble         skr;
 
+    //sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: function called for second sat", __func__);
+
     /* make some sanity checks */
     if (ssat->labels[i] == NULL)
     {
@@ -359,6 +361,11 @@ static void update_field(GtkSecondSat * ssat, guint i)
     if (buff != NULL)
     {
         gtk_label_set_text(GTK_LABEL(ssat->labels[i]), buff);
+        /*
+        sat_log_log(SAT_LOG_LEVEL_DEBUG,
+                    ("%s: current buff is %s, writing to %d case, second sat"),
+                    buff, i);
+        */
         g_free(buff);
     }
 }
@@ -443,7 +450,7 @@ static void select_satellite(GtkWidget * menuitem, gpointer data)
 
         sat = SAT(g_slist_nth_data(ssat->sats, i));
 
-        title = g_markup_printf_escaped("<b>%s</b>", sat->nickname);
+        title = g_markup_printf_escaped("<b>Second Satellite: %s</b>", sat->nickname);
         gtk_label_set_markup(GTK_LABEL(ssat->header), title);
         g_free(title);
     }
@@ -591,6 +598,8 @@ void gtk_second_sat_select_sat(GtkWidget * second_sat, gint catnum)
     gboolean        foundsat = FALSE;
     gint            i, n;
 
+    sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: Function called", __func__);
+
     /* find satellite with catnum */
     n = g_slist_length(ssat->sats);
     for (i = 0; i < n; i++)
@@ -614,7 +623,12 @@ void gtk_second_sat_select_sat(GtkWidget * second_sat, gint catnum)
                     __func__, catnum);
         return;
     }
-    title = g_markup_printf_escaped("<b>%s</b>", sat->nickname);
+    else
+    {
+        sat_log_log(SAT_LOG_LEVEL_DEBUG,
+                    _("%s: Found second satellite"), __func__);
+    }
+    title = g_markup_printf_escaped("<b>Second Satellite: %s</b>", sat->nickname);
     gtk_label_set_markup(GTK_LABEL(ssat->header), title);
     g_free(title);
 }
@@ -624,6 +638,8 @@ void gtk_second_sat_update(GtkWidget * widget)
 {
     GtkSecondSat   *ssat = GTK_SECOND_SAT(widget);
     guint           i;
+
+    //sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: Function called", __func__);
 
     /* first, do some sanity checks */
     if ((ssat == NULL) || !IS_GTK_SECOND_SAT(ssat))
@@ -639,13 +655,16 @@ void gtk_second_sat_update(GtkWidget * widget)
     if (ssat->counter < ssat->refresh)
     {
         ssat->counter++;
+        sat_log_log(SAT_LOG_LEVEL_DEBUG, "Second sat %s: counter is %d, refresh is %d", __func__, ssat->counter, ssat->refresh);
     }
     else
     {
+        sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: else statement raised, gtk-second-sat.c", __func__);
         /* we calculate here to avoid double calc */
         if ((ssat->flags & SECOND_SAT_FLAG_RA) ||
             (ssat->flags & SECOND_SAT_FLAG_DEC))
         {
+            sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: second if statement raised, gtk-second-sat.c", __func__);
             obs_astro_t     astro;
             sat_t          *sat =
                 SAT(g_slist_nth_data(ssat->sats, ssat->selected));
@@ -660,7 +679,8 @@ void gtk_second_sat_update(GtkWidget * widget)
         {
             if (ssat->flags & (1 << i))
                 update_field(ssat, i);
-
+            else
+                sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: (ssat->flags & (1 << i)) is false", __func__);
         }
         ssat->counter = 1;
     }
@@ -757,7 +777,7 @@ GtkWidget      *gtk_second_sat_new(GKeyFile * cfgdata, GHashTable * sats,
 
     /* create header */
     sat = SAT(g_slist_nth_data(second_sat->sats, 0));
-    title = g_markup_printf_escaped("<b>%s</b>",
+    title = g_markup_printf_escaped("<b>Second Satellite: %s</b>",
                                     sat ? sat->nickname : "noname");
     second_sat->header = gtk_label_new(NULL);
     gtk_label_set_markup(GTK_LABEL(second_sat->header), title);

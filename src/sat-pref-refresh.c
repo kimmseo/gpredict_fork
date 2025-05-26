@@ -33,6 +33,7 @@ static GtkWidget *listspin;     /* spin button for list view */
 static GtkWidget *mapspin;      /* spin button for map view */
 static GtkWidget *polarspin;    /* spin button for polar view */
 static GtkWidget *singlespin;   /* spin button for single-sat view */
+static GtkWidget *secondspin;   /* spin button for second-sat view */
 
 static gboolean dirty = FALSE;  /* used to check whether any changes have occurred */
 static gboolean reset = FALSE;
@@ -82,6 +83,11 @@ void sat_pref_refresh_ok(GKeyFile * cfg)
                                    MOD_CFG_SINGLE_SAT_REFRESH,
                                    gtk_spin_button_get_value_as_int
                                    (GTK_SPIN_BUTTON(singlespin)));
+            g_key_file_set_integer(cfg,
+                                   MOD_CFG_SECOND_SAT_SECTION,
+                                   MOD_CFG_SECOND_SAT_REFRESH,
+                                   gtk_spin_button_get_value_as_int
+                                   (GTK_SPIN_BUTTON(secondspin)));
         }
         else
         {
@@ -104,6 +110,10 @@ void sat_pref_refresh_ok(GKeyFile * cfg)
             sat_cfg_set_int(SAT_CFG_INT_SINGLE_SAT_REFRESH,
                             gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON
                                                              (singlespin)));
+
+             sat_cfg_set_int(SAT_CFG_INT_SECOND_SAT_REFRESH,
+                            gtk_spin_button_get_value_as_int(GTK_SPIN_BUTTON
+                                                             (secondspin)));                                                            
         }
     }
     else if (reset)
@@ -117,6 +127,7 @@ void sat_pref_refresh_ok(GKeyFile * cfg)
             sat_cfg_reset_int(SAT_CFG_INT_MAP_REFRESH);
             sat_cfg_reset_int(SAT_CFG_INT_POLAR_REFRESH);
             sat_cfg_reset_int(SAT_CFG_INT_SINGLE_SAT_REFRESH);
+            sat_cfg_reset_int(SAT_CFG_INT_SECOND_SAT_REFRESH);
         }
         else
         {
@@ -136,6 +147,10 @@ void sat_pref_refresh_ok(GKeyFile * cfg)
             g_key_file_remove_key((GKeyFile *) (cfg),
                                   MOD_CFG_SINGLE_SAT_SECTION,
                                   MOD_CFG_SINGLE_SAT_REFRESH, NULL);
+
+            g_key_file_remove_key((GKeyFile *) (cfg),
+                                  MOD_CFG_SECOND_SAT_SECTION,
+                                  MOD_CFG_SECOND_SAT_REFRESH, NULL);
         }
     }
 
@@ -182,6 +197,8 @@ static void reset_cb(GtkWidget * button, gpointer cfg)
         gtk_spin_button_set_value(GTK_SPIN_BUTTON(polarspin), val);
         val = sat_cfg_get_int_def(SAT_CFG_INT_SINGLE_SAT_REFRESH);
         gtk_spin_button_set_value(GTK_SPIN_BUTTON(singlespin), val);
+        val = sat_cfg_get_int_def(SAT_CFG_INT_SECOND_SAT_REFRESH);
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(secondspin), val);
     }
     else
     {
@@ -196,6 +213,8 @@ static void reset_cb(GtkWidget * button, gpointer cfg)
         gtk_spin_button_set_value(GTK_SPIN_BUTTON(polarspin), val);
         val = sat_cfg_get_int(SAT_CFG_INT_SINGLE_SAT_REFRESH);
         gtk_spin_button_set_value(GTK_SPIN_BUTTON(singlespin), val);
+        val = sat_cfg_get_int(SAT_CFG_INT_SECOND_SAT_REFRESH);
+        gtk_spin_button_set_value(GTK_SPIN_BUTTON(secondspin), val);        
     }
 
     /* reset flags */
@@ -391,6 +410,36 @@ GtkWidget      *sat_pref_refresh_create(GKeyFile * cfg)
     g_signal_connect(G_OBJECT(singlespin), "value-changed",
                      G_CALLBACK(spin_changed_cb), NULL);
     gtk_grid_attach(GTK_GRID(table), singlespin, 1, 5, 1, 1);
+
+    label = gtk_label_new(_("[cycle]"));
+    g_object_set(label, "xalign", 0.0, "yalign", 0.5, NULL);
+    gtk_grid_attach(GTK_GRID(table), label, 2, 5, 1, 1);
+
+    /* Second-Sat View */
+    label = gtk_label_new(_("Refresh second-sat view every"));
+    g_object_set(label, "xalign", 0.0, "yalign", 0.5, NULL);
+    gtk_grid_attach(GTK_GRID(table), label, 0, 5, 1, 1);
+
+    secondspin = gtk_spin_button_new_with_range(1, 50, 1);
+    gtk_spin_button_set_increments(GTK_SPIN_BUTTON(secondspin), 1, 5);
+    gtk_spin_button_set_numeric(GTK_SPIN_BUTTON(secondspin), TRUE);
+    gtk_spin_button_set_update_policy(GTK_SPIN_BUTTON(secondspin),
+                                      GTK_UPDATE_IF_VALID);
+    if (cfg != NULL)
+    {
+        val = mod_cfg_get_int(cfg,
+                              MOD_CFG_SECOND_SAT_SECTION,
+                              MOD_CFG_SECOND_SAT_REFRESH,
+                              SAT_CFG_INT_SECOND_SAT_REFRESH);
+    }
+    else
+    {
+        val = sat_cfg_get_int(SAT_CFG_INT_SECOND_SAT_REFRESH);
+    }
+    gtk_spin_button_set_value(GTK_SPIN_BUTTON(secondspin), val);
+    g_signal_connect(G_OBJECT(secondspin), "value-changed",
+                     G_CALLBACK(spin_changed_cb), NULL);
+    gtk_grid_attach(GTK_GRID(table), secondspin, 1, 5, 1, 1);
 
     label = gtk_label_new(_("[cycle]"));
     g_object_set(label, "xalign", 0.0, "yalign", 0.5, NULL);

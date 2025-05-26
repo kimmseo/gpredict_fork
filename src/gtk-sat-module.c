@@ -125,9 +125,69 @@ static void update_autotrack(GtkSatModule * module)
     if (next_sat != module->target)
     {
         sat_log_log(SAT_LOG_LEVEL_INFO,
-                    _("Autotrack: Changing target satellite %d -> %d"),
+                    _("Autotrack: Changing target1 satellite %d -> %d"),
                     module->target, next_sat);
         gtk_sat_module_select_sat(module, next_sat);
+    }
+
+    g_list_free(satlist);
+}
+
+static void update_autotrack_second_sat(GtkSatModule * module)
+{
+    GList          *satlist = NULL;
+    GList          *iter;
+    sat_t          *sat = NULL;
+    guint           i, n;
+    double          next_aos;
+    gint            next_sat;
+    int             min_ele = sat_cfg_get_int(SAT_CFG_INT_PRED_MIN_EL);
+
+    if (module->target2 > 0)
+        sat = g_hash_table_lookup(module->satellites, &module->target2);
+
+    /* do nothing if current target is still above horizon */
+    if (sat != NULL && sat->el > min_ele)
+        return;
+
+    /* set target to satellite with next AOS */
+    satlist = g_hash_table_get_values(module->satellites);
+    iter = satlist;
+    n = g_list_length(satlist);
+    if (n == 0)
+        return;
+
+    next_aos = module->tmgCdnum + 10.f; /* hope there is AOS within 10 days */
+    next_sat = module->target2;
+
+    i = 0;
+    while (i++ < n)
+    {
+        sat = (sat_t *) iter->data;
+
+        /* if sat is above horizon, select it and we are done */
+        if (sat->el > min_ele)
+        {
+            next_sat = sat->tle.catnr;
+            break;
+        }
+
+        /* we have a candidate if AOS is in the future */
+        if (sat->aos > module->tmgCdnum && sat->aos < next_aos)
+        {
+            next_aos = sat->aos;
+            next_sat = sat->tle.catnr;
+        }
+
+        iter = iter->next;
+    }
+
+    if (next_sat != module->target2)
+    {
+        sat_log_log(SAT_LOG_LEVEL_INFO,
+                    _("Autotrack: Changing target2 satellite %d -> %d"),
+                    module->target2, next_sat);
+        gtk_sat_module_select_sat_second(module, next_sat);
     }
 
     g_list_free(satlist);
@@ -260,6 +320,7 @@ static void gtk_sat_module_init(GtkSatModule * module,
     module->tmgReset = FALSE;
 
     module->target = -1;
+    module->target2 = -1;
     module->autotrack = FALSE;
 }
 
@@ -322,6 +383,7 @@ static GtkWidget *create_view(GtkSatModule * module, guint num)
     case GTK_SAT_MOD_VIEW_SINGLE:
         view = gtk_single_sat_new(module->cfgdata,
                                   module->satellites, module->qth, 0);
+        sat_log_log(SAT_LOG_LEVEL_DEBUG, "GtkSingleSat type: %s\n", g_type_name(gtk_single_sat_get_type()));
         break;   
 
     case GTK_SAT_MOD_VIEW_EVENT:
@@ -332,6 +394,7 @@ static GtkWidget *create_view(GtkSatModule * module, guint num)
     case GTK_SAT_MOD_VIEW_SECOND:
         view = gtk_second_sat_new(module->cfgdata,
                                   module->satellites, module->qth, 0);
+        sat_log_log(SAT_LOG_LEVEL_DEBUG, "GtkSecondSat type: %s\n", g_type_name(gtk_second_sat_get_type()));
         break;     
 
     default:
@@ -813,6 +876,7 @@ static gboolean gtk_sat_module_timeout_cb(gpointer module)
         /* update target if autotracking is enabled */
         if (mod->autotrack)
             update_autotrack(mod);
+            update_autotrack_second_sat(mod);
 
         /* send notice to radio and rotator controller */
         if (mod->rigctrl)
@@ -1510,6 +1574,11 @@ void gtk_sat_module_select_sat(GtkSatModule * module, gint catnum)
         {
             gtk_polar_view_select_sat(child, catnum);
         }
+        else if (IS_GTK_SECOND_SAT(child))
+        {
+            sat_log_log(SAT_LOG_LEVEL_DEBUG, _("%s: Is second sat view"),
+                        __func__);
+        }
         else
         {
             sat_log_log(SAT_LOG_LEVEL_ERROR, _("%s: Unknown child type"),
@@ -1544,7 +1613,7 @@ void gtk_sat_module_select_sat_second(GtkSatModule * module, gint catnum)
         }
         else
         {
-            sat_log_log(SAT_LOG_LEVEL_DEBUG, _("%s: Is not second singel sat view"),
+            sat_log_log(SAT_LOG_LEVEL_DEBUG, _("%s: Is not second sat view"),
                         __func__);
         }
     }

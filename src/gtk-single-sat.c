@@ -379,6 +379,11 @@ static void update_field(GtkSingleSat * ssat, guint i)
     if (buff != NULL)
     {
         gtk_label_set_text(GTK_LABEL(ssat->labels[i]), buff);
+        /*
+        sat_log_log(SAT_LOG_LEVEL_DEBUG,
+                    ("%s: current buff is %s, writing to %d case, first sat"),
+                    buff, i);
+        */        
         g_free(buff);
     }
 }
@@ -463,7 +468,7 @@ static void select_satellite(GtkWidget * menuitem, gpointer data)
 
         sat = SAT(g_slist_nth_data(ssat->sats, i));
 
-        title = g_markup_printf_escaped("<b>%s</b>", sat->nickname);
+        title = g_markup_printf_escaped("<b>First Satellite: %s</b>", sat->nickname);
         gtk_label_set_markup(GTK_LABEL(ssat->header), title);
         g_free(title);
     }
@@ -634,7 +639,7 @@ void gtk_single_sat_select_sat(GtkWidget * single_sat, gint catnum)
                     __func__, catnum);
         return;
     }
-    title = g_markup_printf_escaped("<b>%s</b>", sat->nickname);
+    title = g_markup_printf_escaped("<b>First Satellite: %s</b>", sat->nickname);
     gtk_label_set_markup(GTK_LABEL(ssat->header), title);
     g_free(title);
 }
@@ -662,6 +667,7 @@ void gtk_single_sat_update(GtkWidget * widget)
     }
     else
     {
+        sat_log_log(SAT_LOG_LEVEL_DEBUG, "First sat %s: counter is %d, refresh is %d", __func__, ssat->counter, ssat->refresh);
         /* we calculate here to avoid double calc */
         if ((ssat->flags & SINGLE_SAT_FLAG_RA) ||
             (ssat->flags & SINGLE_SAT_FLAG_DEC))
@@ -777,7 +783,7 @@ GtkWidget      *gtk_single_sat_new(GKeyFile * cfgdata, GHashTable * sats,
 
     /* create header */
     sat = SAT(g_slist_nth_data(single_sat->sats, 0));
-    title = g_markup_printf_escaped("<b>%s</b>",
+    title = g_markup_printf_escaped("<b>First Satellite: %s</b>",
                                     sat ? sat->nickname : "noname");
     single_sat->header = gtk_label_new(NULL);
     gtk_label_set_markup(GTK_LABEL(single_sat->header), title);
