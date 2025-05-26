@@ -652,6 +652,8 @@ void gtk_second_sat_update(GtkWidget * widget)
 
 
     /* check refresh rate */
+    /* below one line is for debugging ONLY */
+    ssat->refresh = 1;
     if (ssat->counter < ssat->refresh)
     {
         ssat->counter++;
