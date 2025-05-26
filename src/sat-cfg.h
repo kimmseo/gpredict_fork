@@ -129,7 +129,10 @@ typedef enum {
     SAT_CFG_INT_TLE_LAST_UPDATE,        /*!< Date and time of last update, Unix seconds. */
     SAT_CFG_INT_LOG_CLEAN_AGE,  /*!< Age of log file to delete (seconds) */
     SAT_CFG_INT_LOG_LEVEL,      /*!< Logging level */
-    SAT_CFG_INT_NUM             /*!< Number of integer parameters. */
+    SAT_CFG_INT_NUM,             /*!< Number of integer parameters. */
+    SAT_CFG_INT_SECOND_SAT_REFRESH,     /*!< Second-sat refresh rate (cycle). */
+    SAT_CFG_INT_SECOND_SAT_FIELDS,      /*!< Second-sat fields. */
+    SAT_CFG_INT_SECOND_SAT_SELECT      /*!< Second-sat selected satellite. */
 } sat_cfg_int_e;
 
 /** Symbolic references for string config values. */

@@ -53,6 +53,7 @@
 #include "gtk-sat-module-popup.h"
 #include "gtk-sat-module-tmg.h"
 #include "gtk-single-sat.h"
+#include "gtk-second-sat.h"
 #include "gtk-sky-glance.h"
 #include "mod-cfg.h"
 #include "mod-cfg-get-param.h"
@@ -321,12 +322,17 @@ static GtkWidget *create_view(GtkSatModule * module, guint num)
     case GTK_SAT_MOD_VIEW_SINGLE:
         view = gtk_single_sat_new(module->cfgdata,
                                   module->satellites, module->qth, 0);
-        break;
+        break;   
 
     case GTK_SAT_MOD_VIEW_EVENT:
         view = gtk_event_list_new(module->cfgdata,
                                   module->satellites, module->qth, 0);
         break;
+
+    case GTK_SAT_MOD_VIEW_SECOND:
+        view = gtk_second_sat_new(module->cfgdata,
+                                  module->satellites, module->qth, 0);
+        break;     
 
     default:
         sat_log_log(SAT_LOG_LEVEL_ERROR,
@@ -600,6 +606,12 @@ static void update_child(GtkWidget * child, gdouble tstamp)
     {
         GTK_SINGLE_SAT(child)->tstamp = tstamp;
         gtk_single_sat_update(child);
+    }
+
+    else if (IS_GTK_SECOND_SAT(child))
+    {
+        GTK_SECOND_SAT(child)->tstamp = tstamp;
+        gtk_second_sat_update(child);
     }
 
     else if (IS_GTK_EVENT_LIST(child))
