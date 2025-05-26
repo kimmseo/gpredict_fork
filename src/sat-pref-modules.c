@@ -38,6 +38,7 @@
 #include "sat-pref-polar-view.h"
 #include "sat-pref-refresh.h"
 #include "sat-pref-single-sat.h"
+#include "sat-pref-second-sat.h"
 
 
 /**
@@ -78,6 +79,9 @@ GtkWidget      *sat_pref_modules_create(GKeyFile * cfg)
     gtk_notebook_append_page(GTK_NOTEBOOK(nbook),
                              sat_pref_single_sat_create(cfg),
                              gtk_label_new(_("Single Sat View")));
+    gtk_notebook_append_page(GTK_NOTEBOOK(nbook),
+                             sat_pref_second_sat_create(cfg),
+                             gtk_label_new(_("Second Sat View")));
 
     return nbook;
 }
@@ -91,6 +95,7 @@ void sat_pref_modules_cancel(GKeyFile * cfg)
     sat_pref_map_view_cancel(cfg);
     sat_pref_polar_view_cancel(cfg);
     sat_pref_single_sat_cancel(cfg);
+    sat_pref_second_sat_cancel(cfg);
 }
 
 /** User pressed OK. Any changes should be stored in config. */
@@ -102,4 +107,5 @@ void sat_pref_modules_ok(GKeyFile * cfg)
     sat_pref_map_view_ok(cfg);
     sat_pref_polar_view_ok(cfg);
     sat_pref_single_sat_ok(cfg);
+    sat_pref_second_sat_ok(cfg);
 }

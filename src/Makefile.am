@@ -102,6 +102,7 @@ gpredict_SOURCES = \
     sat-pref-list-view.c sat-pref-list-view.h \
     sat-pref-polar-view.c sat-pref-polar-view.h \
     sat-pref-single-sat.c sat-pref-single-sat.h \
+    sat-pref-second-sat.c sat-pref-second-sat.h \
     sat-pref-interfaces.c sat-pref-interfaces.h \
     sat-pref-rig.c sat-pref-rig.h sat-pref-rig-data.h \
     sat-pref-rig-editor.c sat-pref-rig-editor.h \

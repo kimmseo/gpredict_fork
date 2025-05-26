@@ -4,6 +4,8 @@
         "sgp4sdp4.h": "c",
         "mod-mgr.h": "c",
         "gtk-sat-module.h": "c",
-        "gtk-sat-module-popup.h": "c"
+        "gtk-sat-module-popup.h": "c",
+        "config-keys.h": "c",
+        "mod-cfg-get-param.h": "c"
     }
 }
