@@ -133,6 +133,9 @@ static void update_autotrack(GtkSatModule * module)
     g_list_free(satlist);
 }
 
+
+// TODO: Bug here, when selecting second satellite from popup menu for sat module
+// autotrack will be called and change the second satellite back to original
 static void update_autotrack_second_sat(GtkSatModule * module)
 {
     GList          *satlist = NULL;
@@ -182,6 +185,7 @@ static void update_autotrack_second_sat(GtkSatModule * module)
         iter = iter->next;
     }
 
+    /*
     if (next_sat != module->target2)
     {
         sat_log_log(SAT_LOG_LEVEL_INFO,
@@ -189,6 +193,7 @@ static void update_autotrack_second_sat(GtkSatModule * module)
                     module->target2, next_sat);
         gtk_sat_module_select_sat_second(module, next_sat);
     }
+    */
 
     g_list_free(satlist);
 }
@@ -383,7 +388,7 @@ static GtkWidget *create_view(GtkSatModule * module, guint num)
     case GTK_SAT_MOD_VIEW_SINGLE:
         view = gtk_single_sat_new(module->cfgdata,
                                   module->satellites, module->qth, 0);
-        sat_log_log(SAT_LOG_LEVEL_DEBUG, "GtkSingleSat type: %s\n", g_type_name(gtk_single_sat_get_type()));
+        //sat_log_log(SAT_LOG_LEVEL_DEBUG, "GtkSingleSat type: %s\n", g_type_name(gtk_single_sat_get_type()));
         break;   
 
     case GTK_SAT_MOD_VIEW_EVENT:
@@ -394,7 +399,7 @@ static GtkWidget *create_view(GtkSatModule * module, guint num)
     case GTK_SAT_MOD_VIEW_SECOND:
         view = gtk_second_sat_new(module->cfgdata,
                                   module->satellites, module->qth, 0);
-        sat_log_log(SAT_LOG_LEVEL_DEBUG, "GtkSecondSat type: %s\n", g_type_name(gtk_second_sat_get_type()));
+        //sat_log_log(SAT_LOG_LEVEL_DEBUG, "GtkSecondSat type: %s\n", g_type_name(gtk_second_sat_get_type()));
         break;     
 
     default:
@@ -1609,6 +1614,8 @@ void gtk_sat_module_select_sat_second(GtkSatModule * module, gint catnum)
 
         if (IS_GTK_SECOND_SAT(child))
         {
+            sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: IS_GTK_SECOND_SAT TRUE, gtk_second_sat_select_sat called",
+                        __func__);
             gtk_second_sat_select_sat(child, catnum);
         }
         else

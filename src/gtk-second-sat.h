@@ -104,7 +104,7 @@ struct _gtk_second_sat {
     guint32         flags;      /*!< Flags indicating which columns are visible. */
     guint           refresh;    /*!< Refresh rate. */
     guint           counter;    /*!< cycle counter. */
-    guint           selected;   /*!< index of selected sat. */
+    //guint           selected;   /*!< index of selected sat. */
     guint           selected2;  /*!< index of second selected sat */
 
     gdouble         tstamp;     /*!< time stamp of calculations; update by GtkSatModule */

@@ -667,7 +667,7 @@ void gtk_single_sat_update(GtkWidget * widget)
     }
     else
     {
-        sat_log_log(SAT_LOG_LEVEL_DEBUG, "First sat %s: counter is %d, refresh is %d", __func__, ssat->counter, ssat->refresh);
+        //sat_log_log(SAT_LOG_LEVEL_DEBUG, "First sat %s: counter is %d, refresh is %d", __func__, ssat->counter, ssat->refresh);
         /* we calculate here to avoid double calc */
         if ((ssat->flags & SINGLE_SAT_FLAG_RA) ||
             (ssat->flags & SINGLE_SAT_FLAG_DEC))

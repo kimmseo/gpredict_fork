@@ -662,12 +662,12 @@ void gtk_second_sat_update(GtkWidget * widget)
     }
     else
     {
-        sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: else statement raised", __func__);
+        //sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: else statement raised", __func__);
         /* we calculate here to avoid double calc */
         if ((ssat->flags & SECOND_SAT_FLAG_RA) ||
             (ssat->flags & SECOND_SAT_FLAG_DEC))
         {
-            sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: second if statement raised, gtk-second-sat.c", __func__);
+            //sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: second if statement raised, gtk-second-sat.c", __func__);
             obs_astro_t     astro;
             sat_t          *sat =
                 SAT(g_slist_nth_data(ssat->sats, ssat->selected2));

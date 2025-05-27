@@ -645,8 +645,8 @@ static void screen_state_cb(GtkWidget * menuitem, gpointer data)
  * @param data Pointer to the GtkSatModule widget
  * 
  * This menu item is activated when a new satellite is selected in the 
- * "Select satellite" submenu of the module pop-up. This will trigger a call
- * to the select_sat() fuinction of the module, which in turn will call the
+ * "Select First Satellite" submenu of the module pop-up. This will trigger a call
+ * to the select_sat() function of the module, which in turn will call the
  * select_sat() function of each child view.
  * 
  * The catalog number of the selected satellite is attached to the menu item
@@ -667,8 +667,8 @@ static void sat_selected_cb(GtkWidget * menuitem, gpointer data)
  * @param data Pointer to the GtkSatModule widget
  * 
  * This menu item is activated when a new satellite is selected in the 
- * "Select satellite" submenu of the module pop-up. This will trigger a call
- * to the select_sat() fuinction of the module, which in turn will call the
+ * "Select Second Satellite" submenu of the module pop-up. This will trigger a call
+ * to the select_sat() function of the module, which in turn will call the
  * select_sat() function of each child view.
  * 
  * The catalog number of the selected satellite is attached to the menu item
@@ -677,6 +677,8 @@ static void sat_selected_cb_second(GtkWidget * menuitem, gpointer data)
 {
     gint            catnum;
     GtkSatModule   *module;
+
+    sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: Function called", __func__);
 
     catnum = GPOINTER_TO_INT(g_object_get_data(G_OBJECT(menuitem), "catnum"));
     module = GTK_SAT_MODULE(data);
@@ -1200,6 +1202,9 @@ void gtk_sat_module_popup(GtkSatModule * module)
     sats = g_hash_table_get_values(module->satellites);
     sats = g_list_sort(sats, (GCompareFunc) sat_nickname_compare);
 
+    /* TODO: clicking on an item under Select Second Sat doesn't change second sat view
+        Unknown: Second sat may or may not actually change (i.e., target2 and selected2)
+    */
     n = g_list_length(sats);
     for (i = 0; i < n; i++)
     {
