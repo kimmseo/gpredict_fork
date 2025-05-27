@@ -654,7 +654,7 @@ void gtk_second_sat_update(GtkWidget * widget)
     /* check refresh rate */
     /* below one line is for debugging ONLY */
     // TODO: Find where integer overflow is occuring and remove hardcoded line
-    ssat->refresh = 1;  // hardcoded cos otherwise integer overflow occurs
+    //ssat->refresh = 1;  // hardcoded cos otherwise integer overflow occurs
     if (ssat->counter < ssat->refresh)
     {
         ssat->counter++;

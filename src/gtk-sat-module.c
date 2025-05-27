@@ -83,8 +83,7 @@ static void update_autotrack(GtkSatModule * module)
     gint            next_sat;
     int             min_ele = sat_cfg_get_int(SAT_CFG_INT_PRED_MIN_EL);
 
-
-    sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: Function called", __func__);
+    //sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: Function called", __func__);
 
     if (module->target > 0)
         sat = g_hash_table_lookup(module->satellites, &module->target);

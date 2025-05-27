@@ -418,7 +418,7 @@ GtkWidget      *sat_pref_refresh_create(GKeyFile * cfg)
     /* Second-Sat View */
     label = gtk_label_new(_("Refresh second-sat view every"));
     g_object_set(label, "xalign", 0.0, "yalign", 0.5, NULL);
-    gtk_grid_attach(GTK_GRID(table), label, 0, 5, 1, 1);
+    gtk_grid_attach(GTK_GRID(table), label, 0, 6, 1, 1);
 
     secondspin = gtk_spin_button_new_with_range(1, 50, 1);
     gtk_spin_button_set_increments(GTK_SPIN_BUTTON(secondspin), 1, 5);
@@ -439,11 +439,11 @@ GtkWidget      *sat_pref_refresh_create(GKeyFile * cfg)
     gtk_spin_button_set_value(GTK_SPIN_BUTTON(secondspin), val);
     g_signal_connect(G_OBJECT(secondspin), "value-changed",
                      G_CALLBACK(spin_changed_cb), NULL);
-    gtk_grid_attach(GTK_GRID(table), secondspin, 1, 5, 1, 1);
+    gtk_grid_attach(GTK_GRID(table), secondspin, 1, 6, 1, 1);
 
     label = gtk_label_new(_("[cycle]"));
     g_object_set(label, "xalign", 0.0, "yalign", 0.5, NULL);
-    gtk_grid_attach(GTK_GRID(table), label, 2, 5, 1, 1);
+    gtk_grid_attach(GTK_GRID(table), label, 2, 6, 1, 1);
 
     /* create vertical box */
     vbox = gtk_box_new(GTK_ORIENTATION_VERTICAL, 0);
