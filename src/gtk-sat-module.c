@@ -83,6 +83,9 @@ static void update_autotrack(GtkSatModule * module)
     gint            next_sat;
     int             min_ele = sat_cfg_get_int(SAT_CFG_INT_PRED_MIN_EL);
 
+
+    sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: Function called", __func__);
+
     if (module->target > 0)
         sat = g_hash_table_lookup(module->satellites, &module->target);
 
@@ -146,6 +149,8 @@ static void update_autotrack_second_sat(GtkSatModule * module)
     gint            next_sat;
     int             min_ele = sat_cfg_get_int(SAT_CFG_INT_PRED_MIN_EL);
 
+    //sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: Function called", __func__);
+
     if (module->target2 > 0)
         sat = g_hash_table_lookup(module->satellites, &module->target2);
 
@@ -185,7 +190,6 @@ static void update_autotrack_second_sat(GtkSatModule * module)
         iter = iter->next;
     }
 
-    /*
     if (next_sat != module->target2)
     {
         sat_log_log(SAT_LOG_LEVEL_INFO,
@@ -193,7 +197,6 @@ static void update_autotrack_second_sat(GtkSatModule * module)
                     module->target2, next_sat);
         gtk_sat_module_select_sat_second(module, next_sat);
     }
-    */
 
     g_list_free(satlist);
 }
@@ -880,8 +883,10 @@ static gboolean gtk_sat_module_timeout_cb(gpointer module)
 
         /* update target if autotracking is enabled */
         if (mod->autotrack)
+        {
             update_autotrack(mod);
             update_autotrack_second_sat(mod);
+        }
 
         /* send notice to radio and rotator controller */
         if (mod->rigctrl)
