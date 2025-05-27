@@ -138,6 +138,7 @@ static void update_autotrack(GtkSatModule * module)
 
 // TODO: Bug here, when selecting second satellite from popup menu for sat module
 // autotrack will be called and change the second satellite back to original
+// Above TODO status: done (fixed)
 static void update_autotrack_second_sat(GtkSatModule * module)
 {
     GList          *satlist = NULL;

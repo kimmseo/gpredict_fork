@@ -1205,6 +1205,7 @@ void gtk_sat_module_popup(GtkSatModule * module)
     /* TODO: clicking on an item under Select Second Sat doesn't change second sat view
         Unknown: Second sat may or may not actually change (i.e., target2 and selected2)
     */
+   // Above TODO status: done (fixed)
     n = g_list_length(sats);
     for (i = 0; i < n; i++)
     {
