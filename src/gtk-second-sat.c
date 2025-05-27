@@ -82,7 +82,7 @@ static GtkBoxClass *parent_class = NULL;
 static void gtk_second_sat_destroy(GtkWidget * widget)
 {
     GtkSecondSat   *ssat = GTK_SECOND_SAT(widget);
-    sat_t          *sat = SAT(g_slist_nth_data(ssat->sats, ssat->selected));
+    sat_t          *sat = SAT(g_slist_nth_data(ssat->sats, ssat->selected2));
 
     if (sat != NULL)
         g_key_file_set_integer(ssat->cfgdata, MOD_CFG_SECOND_SAT_SECTION,
@@ -136,7 +136,7 @@ static void update_field(GtkSecondSat * ssat, guint i)
     }
 
     /* get selected satellite */
-    sat = SAT(g_slist_nth_data(ssat->sats, ssat->selected));
+    sat = SAT(g_slist_nth_data(ssat->sats, ssat->selected2));
     if (!sat)
     {
         sat_log_log(SAT_LOG_LEVEL_ERROR,
@@ -446,7 +446,7 @@ static void select_satellite(GtkWidget * menuitem, gpointer data)
      */
     if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
     {
-        ssat->selected = i;
+        ssat->selected2 = i;
 
         sat = SAT(g_slist_nth_data(ssat->sats, i));
 
@@ -469,7 +469,7 @@ static void gtk_second_sat_popup_cb(GtkWidget * button, gpointer data)
     sat_t          *sati;       /* used to create list of satellites */
     guint           i, n;
 
-    sat = SAT(g_slist_nth_data(second_sat->sats, second_sat->selected));
+    sat = SAT(g_slist_nth_data(second_sat->sats, second_sat->selected2));
     if (sat == NULL)
         return;
 
@@ -514,7 +514,7 @@ static void gtk_second_sat_popup_cb(GtkWidget * button, gpointer data)
         menuitem = gtk_radio_menu_item_new_with_label(group, sati->nickname);
         group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(menuitem));
 
-        if (i == second_sat->selected)
+        if (i == second_sat->selected2)
             gtk_check_menu_item_set_active(GTK_CHECK_MENU_ITEM(menuitem),
                                            TRUE);
 
@@ -608,7 +608,7 @@ void gtk_second_sat_select_sat(GtkWidget * second_sat, gint catnum)
         if (sat->tle.catnr == catnum)
         {
             /* found satellite */
-            ssat->selected = i;
+            ssat->selected2 = i;
             foundsat = TRUE;
 
             /* exit loop */
@@ -653,7 +653,8 @@ void gtk_second_sat_update(GtkWidget * widget)
 
     /* check refresh rate */
     /* below one line is for debugging ONLY */
-    ssat->refresh = 1;
+    // TODO: Find where integer overflow is occuring and remove hardcoded line
+    ssat->refresh = 1;  // hardcoded cos otherwise integer overflow occurs
     if (ssat->counter < ssat->refresh)
     {
         ssat->counter++;
@@ -661,7 +662,7 @@ void gtk_second_sat_update(GtkWidget * widget)
     }
     else
     {
-        sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: else statement raised, gtk-second-sat.c", __func__);
+        sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: else statement raised", __func__);
         /* we calculate here to avoid double calc */
         if ((ssat->flags & SECOND_SAT_FLAG_RA) ||
             (ssat->flags & SECOND_SAT_FLAG_DEC))
@@ -669,7 +670,7 @@ void gtk_second_sat_update(GtkWidget * widget)
             sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: second if statement raised, gtk-second-sat.c", __func__);
             obs_astro_t     astro;
             sat_t          *sat =
-                SAT(g_slist_nth_data(ssat->sats, ssat->selected));
+                SAT(g_slist_nth_data(ssat->sats, ssat->selected2));
 
             Calculate_RADec(sat, ssat->qth, &astro);
             sat->ra = Degrees(astro.ra);
@@ -682,7 +683,8 @@ void gtk_second_sat_update(GtkWidget * widget)
             if (ssat->flags & (1 << i))
                 update_field(ssat, i);
             else
-                sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: (ssat->flags & (1 << i)) is false", __func__);
+                //sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: (ssat->flags & (1 << i)) is false", __func__);
+                ;   // no op
         }
         ssat->counter = 1;
     }
@@ -739,7 +741,7 @@ GtkWidget      *gtk_second_sat_new(GKeyFile * cfgdata, GHashTable * sats,
     /* ... */
 
     g_hash_table_foreach(sats, store_sats, widget);
-    second_sat->selected = 0;
+    second_sat->selected2 = 0;
     second_sat->qth = qth;
     second_sat->cfgdata = cfgdata;
 
