@@ -662,6 +662,8 @@ static pass_t  *get_pass_engine(sat_t * sat_in, qth_t * qth, gdouble start,
  *       Therefore, the elements are prepended whereafter the GSList is
  *       reversed
  */
+// causes issues on 2nd iter onwards
+// check for memory leak
 GSList         *get_passes(sat_t * sat, qth_t * qth, gdouble start,
                            gdouble maxdt, guint num)
 {
@@ -696,6 +698,11 @@ GSList         *get_passes(sat_t * sat, qth_t * qth, gdouble start,
         }
         else
         {
+            if (pass != NULL)
+            {
+                sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s %d: Pass is not NULL", __FILE__, __LINE__);
+                free_pass(pass);
+            }
             /* we can't get any more passes */
             i = num;
         }

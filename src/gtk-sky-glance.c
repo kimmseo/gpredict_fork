@@ -484,6 +484,8 @@ static void create_canvas_items(GtkSkyGlance * skg)
     gdouble         xh, xm;
     gchar           buff[3];
 
+    sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: Function called", __func__);
+
     root = goo_canvas_get_root_item(GOO_CANVAS(skg->canvas));
     g_signal_connect(root, "motion_notify_event",
                      (GCallback) on_motion_notify, skg);
@@ -661,6 +663,7 @@ static void get_colors(guint i, guint * bcol, guint * fcol)
  * the satellite hash table. It gets the passes for the current satellite
  * and creates the corresponding canvas items.
  */
+// Crashes from 2nd iter of create_sat
 static void create_sat(gpointer key, gpointer value, gpointer data)
 {
     sat_t          *sat = SAT(value);
@@ -673,6 +676,8 @@ static void create_sat(gpointer key, gpointer value, gpointer data)
     guint           bcol, fcol; /* colors */
     GooCanvasItem  *root;
     GooCanvasItem  *label;
+
+    sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: Function called, sat is: %s", __func__, sat->nickname);
 
     (void)key;
 
@@ -687,7 +692,10 @@ static void create_sat(gpointer key, gpointer value, gpointer data)
     get_colors(skg->satcnt++, &bcol, &fcol);
     maxdt = skg->te - skg->ts;
 
+    // Until here, no issues
+
     /* get passes for satellite */
+    // get_passes causes problems on 2nd iter onwards
     passes = get_passes(sat, skg->qth, skg->ts, maxdt, 10);
     n = g_slist_length(passes);
     sat_log_log(SAT_LOG_LEVEL_DEBUG,
@@ -700,6 +708,7 @@ static void create_sat(gpointer key, gpointer value, gpointer data)
         /* add pass items */
         for (i = 0; i < n; i++)
         {
+            sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: Allocating memory for item %d", __func__, i);
             skypass = g_try_new(sky_pass_t, 1);
             if (skypass == NULL)
             {
@@ -766,6 +775,11 @@ static void create_sat(gpointer key, gpointer value, gpointer data)
                                     "fill-color-rgba", bcol, NULL);
         skg->satlab = g_slist_append(skg->satlab, label);
     }
+    else
+    {
+        ; // no op
+        sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: Pass is NULL", __func__);
+    }
 }
 
 /**
@@ -822,7 +836,11 @@ GtkWidget      *gtk_sky_glance_new(GHashTable * sats, qth_t * qth, gdouble ts)
 
     /* Create the canvas items */
     create_canvas_items(skg);
+    // this works fine
+    //sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: line %d breakpoint log", __FILE__, __LINE__);
+    // Below line crashes program with 100% CPU usage, possibly within create_sat
     g_hash_table_foreach(skg->sats, create_sat, skg);
+    sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: line %d breakpoint log", __FILE__, __LINE__);
 
     gtk_box_pack_start(GTK_BOX(skg), skg->canvas, TRUE, TRUE, 0);
 

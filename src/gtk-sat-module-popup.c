@@ -725,6 +725,8 @@ static void sky_at_glance_cb(GtkWidget * menuitem, gpointer data)
     GtkSatModule   *module = GTK_SAT_MODULE(data);
     gchar          *buff;
 
+    sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s: Function called", __func__);
+
     (void)menuitem;
 
     /* if module is busy wait until done then go on */
@@ -1222,11 +1224,16 @@ void gtk_sat_module_popup(GtkSatModule * module)
     menuitem = gtk_separator_menu_item_new();
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
 
-    /* sky at a glance */
+    // Sky at a glance is currently broken, disabled
+    /*
+
+    // sky at a glance
     menuitem = gtk_menu_item_new_with_label(_("Sky at a glance"));
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
     g_signal_connect(menuitem, "activate",
                      G_CALLBACK(sky_at_glance_cb), module);
+    
+    */
 
     /* time manager */
     menuitem = gtk_menu_item_new_with_label(_("Time Controller"));
