@@ -8,6 +8,12 @@
 #include "gtk-sat-data.h"
 #include "sgpsdp/sgp4sdp4.h"
 
+#include <math.h>
+
+/* Constant Declaration */
+#define EARTH_RADIUS        6378.137    /* Equatorial Radius */
+#define EARTH_RADIUS_POLAR  6356.752    /* Polar Radius */
+
 /* SGP4/SDP4 driver */
 // Wrapper function, will pass sat1's pos [x, y, z] and sat2's [x, y, z]
 // details to dist_calc_driver()
