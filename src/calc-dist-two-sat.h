@@ -11,8 +11,9 @@
 #include <math.h>
 
 /* Constant Declaration */
-#define EARTH_RADIUS        6378.137    /* Equatorial Radius */
-#define EARTH_RADIUS_POLAR  6356.752    /* Polar Radius */
+#define EARTH_RADIUS        6378.137            /* Equatorial Radius */
+#define EARTH_RADIUS_POLAR  6356.752            /* Polar Radius */
+#define PI                  3.141592653589793   /* Pi */
 
 /* SGP4/SDP4 driver */
 // Wrapper function, will pass sat1's pos [x, y, z] and sat2's [x, y, z]

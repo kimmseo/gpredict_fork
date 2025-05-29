@@ -43,14 +43,58 @@ gdouble dist_calc (sat_t *sat1, sat_t *sat2)
 
     return dist_calc_driver(sat1_posx, sat1_posy, sat1_posz,
                             sat2_posx, sat2_posy, sat2_posz);
+    
+    // Use below if Haversine formula is needed instead of Euclidean distance
+    /*
+    gdouble sat1_lat, sat1_lon, sat2_lat, sat2_lon;
+
+    sat1_lat = sat1->ssplat;
+    sat1_lon = sat1->ssplon;
+    sat2_lat = sat2->ssplat;
+    sat2_lon = sat2->ssplon;
+
+    return haversine_dist_calc_driver(sat1_lat, sat1_lon, sat2_lat, sat2_lon);
+    */
 }
 
 // Driver function for calculating distance between two satellites
+// Euclidean distance - need verification
+// If not correct, will need to use Haversine formula
 gdouble dist_calc_driver (gdouble sat1_posx, gdouble sat1_posy, gdouble sat1_posz,
                           gdouble sat2_posx, gdouble sat2_posy, gdouble sat2_posz)
 {
-    //placeholder
-    return 0.0;
+    gdouble dist;
+
+    dist = sqrt( pow((sat1_posx - sat2_posx), 2)
+                + pow((sat1_posy - sat2_posy), 2)
+                + pow((sat1_posz - sat2_posz), 2) );
+    
+    return dist;
+}
+
+// Haversine forumla
+// Use if Euclidean distance is not correct
+gdouble haversine_dist_calc_driver(gdouble sat1_lat, gdouble sat1_lon,
+                                   gdouble sat2_lat, gdouble sat2_lon)
+{
+    gdouble dist;
+
+    // distance betwen lat and lon
+    gdouble dLat = (sat2_lat - sat1_lat) * PI / 180.0;
+    gdouble dLon = (sat2_lon - sat1_lon) * PI / 180.0;
+
+    // convert to rad
+    sat1_lat = (sat1_lat) * PI / 180.0;
+    sat2_lat = (sat2_lat) * PI / 180.0;
+
+    // apply the formula
+    gdouble a = pow (sin(dLat / 2), 2) +
+                pow (sin(dLon / 2), 2) +
+                cos(sat1_lat) * cos(sat2_lat);   
+    gdouble c = 2 * asin(sqrt(a));
+    dist = EARTH_RADIUS * c;
+
+    return dist;
 }
 
 // Check if the straight line between two satellites collide with Earth
@@ -63,6 +107,11 @@ gboolean check_collision (gdouble dist)
     return False;
 }
 
+
+gdouble get_perpendicular_distance_from_centre_of_earth(gdouble side_a, gdouble side_b, gdouble side_c)
+{
+
+}
 
 // Use heron's formula to get Area then divide by side C for height
 // Return the height of a triangle given three sides
