@@ -97,37 +97,49 @@ gdouble haversine_dist_calc_driver(gdouble sat1_lat, gdouble sat1_lon,
     return dist;
 }
 
+// Helper functions
+void compute_magnitude(vector_t *v) {
+    v->w = sqrt(v->x * v->x + v->y * v->y + v->z * v->z);
+}
+
+vector_t cross_product(const vector_t *a, const vector_t *b) {
+    vector_t result;
+    result.x = a->y * b->z - a->z * b->y;
+    result.y = a->z * b->x - a->x * b->z;
+    result.z = a->x * b->y - a->y * b->x;
+    compute_magnitude(&result);
+    return result;
+}
+
 // Check if the straight line between two satellites collide with Earth
 // We assume radius of Earth + 20km of atmosphere is the zone the laser
 // cannot pass through.
 // @param dist: distance between two satellites
-gboolean check_collision (gdouble dist)
+gboolean check_collision (sat_t *sat1, sat_t *sat2)
 {
-    // need implementation
-    return False;
-}
+    gboolean result;
 
+    // get vector Sat A to Sat B
+    vector_t point = {sat1->pos.x, sat1->pos.y, sat1->pos.z, 0.0};
+    vector_t a_to_b;
+    a_to_b.x = (sat2->pos.x) - (sat1->pos.x);
+    a_to_b.y = (sat2->pos.y) - (sat1->pos.y);
+    a_to_b.z = (sat2->pos.z) - (sat1->pos.z);
+    a_to_b.w = 0.0;
 
-gdouble get_perpendicular_distance_from_centre_of_earth(gdouble side_a, gdouble side_b, gdouble side_c)
-{
+    compute_magnitude(&point);
+    compute_magnitude(&direction);
 
-}
+    vector_t cross = cross_product(&point, &direction);
 
-// Use heron's formula to get Area then divide by side C for height
-// Return the height of a triangle given three sides
-// side a is the distance from centre of Earth to sat A
-// side b is the distance from centre of Earth to sat B
-// side c is the straight line distance between sat A and B
-gdouble get_height_of_triangle(gdouble side_a, gdouble side_b, gdouble side_c)
-{
-    gdouble height;
+    double shortest_dist = cross.w / a_to_b.w;
 
-    // s: semiperimeter, a: area of triangle
-    gdouble s, a;
-    s = 0.5 * (side_a + side_b + side_c);
-    a = sqrt(s * (s - side_a) * (s - side_b) * (s - side_c));
-
-    height = (2 * a) / side_c;
-
-    return height;
+    if (shortest_dist > (EARTH_RADIUS + 20))
+    {
+        return True;
+    }
+    else
+    {
+        return False;
+    }
 }

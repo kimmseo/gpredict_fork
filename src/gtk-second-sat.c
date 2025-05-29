@@ -351,7 +351,7 @@ static void update_field(GtkSecondSat * ssat, guint i)
     case SECOND_SAT_FIELD_SKR:
         // using this field for finding out what is xyz in sgp first
         // placeholder
-        buff = g_strdup_printf("x %lf y %lf z %lf", sat->pos.x, sat->pos.y, sat->pos.z);
+        buff = g_strdup_printf("x %lf y %lf z %lf mag %lf", sat->pos.x, sat->pos.y, sat->pos.z, sat->pos.w);
         break;
     default:
         sat_log_log(SAT_LOG_LEVEL_ERROR,
