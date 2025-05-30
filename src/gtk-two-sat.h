@@ -90,16 +90,17 @@ struct _gtk_two_sat {
     GtkWidget       *header2;       /*<! Header label for second satellite */
 
     /*<! GtkLabels displaying the data for first satellite */
-    GtkWidget       *label1[TWO_SAT_FIELD_NUMBER];
+    GtkWidget       *labels[TWO_SAT_FIELD_NUMBER];
     /*<! GtkLabels displaying the data for second satellite */
-    GtkWidget       *label2[TWO_SAT_FIELD_NUMBER];
+    //GtkWidget       *labels2[TWO_SAT_FIELD_NUMBER];
+    // above may be needed, keep for debugging ideas
 
-    GtkWidget       *swin1;         /*<! Scrolled window for first satellite */
-    GtkWidget       *swin2;         /*<! Scrolled window for second satellite */
+    GtkWidget       *swin;          /*<! Scrolled window for first satellite */
     GtkWidget       *table1;        /*<! Table for first satellite */
     GtkWidget       *table2;        /*<! Table for second satellite */
 
-    GtkWidget       *popup_button   /*<! Popup button */
+    GtkWidget       *popup_button1; /*<! Popup button for first satellite */
+    GtkWidget       *popup_button2; /*<! Popup button for second satellite */
 
     GKeyFile        *cfgdata;       /*<! Configuration data */
     GSList          *sats;          /*<! Satellites data SList */

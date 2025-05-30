@@ -659,7 +659,7 @@ void gtk_second_sat_update(GtkWidget * widget)
     if (ssat->counter < ssat->refresh)
     {
         ssat->counter++;
-        sat_log_log(SAT_LOG_LEVEL_DEBUG, "Second sat %s: counter is %d, refresh is %d", __func__, ssat->counter, ssat->refresh);
+        //sat_log_log(SAT_LOG_LEVEL_DEBUG, "Second sat %s: counter is %d, refresh is %d", __func__, ssat->counter, ssat->refresh);
     }
     else
     {
