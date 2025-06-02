@@ -186,9 +186,19 @@ static void update_field_first(GtkTwoSat * tsat, guint i)
         break;
     case TWO_SAT_FIELD_RANGE:
         if (sat_cfg_get_bool(SAT_CFG_BOOL_USE_IMPERIAL))
-            buff = g_strdup_printf("%.3f mi/sec", KM_TO_MI(sat->range_rate));
+            buff = g_strdup_printf("%.3f mi/sec", KM_TO_MI(sat->range));
         else
+            buff = g_strdup_printf("%.3f km/sec", sat->range);
+        break;
+    case TWO_SAT_FIELD_RANGE_RATE:
+        if (sat_cfg_get_bool(SAT_CFG_BOOL_USE_IMPERIAL))
+        {
+            buff = g_strdup_printf("%.3f mi/sec", KM_TO_MI(sat->range_rate));
+        }
+        else
+        {
             buff = g_strdup_printf("%.3f km/sec", sat->range_rate);
+        }
         break;
     case TWO_SAT_FIELD_NEXT_EVENT:
         if(sat->aos > sat->los)
@@ -443,9 +453,19 @@ static void update_field_second(GtkTwoSat * tsat, guint i)
         break;
     case TWO_SAT_FIELD_RANGE:
         if (sat_cfg_get_bool(SAT_CFG_BOOL_USE_IMPERIAL))
-            buff = g_strdup_printf("%.3f mi/sec", KM_TO_MI(sat->range_rate));
+            buff = g_strdup_printf("%.3f mi/sec", KM_TO_MI(sat->range));
         else
+            buff = g_strdup_printf("%.3f km/sec", sat->range);
+        break;
+    case TWO_SAT_FIELD_RANGE_RATE:
+        if (sat_cfg_get_bool(SAT_CFG_BOOL_USE_IMPERIAL))
+        {
+            buff = g_strdup_printf("%.3f mi/sec", KM_TO_MI(sat->range_rate));
+        }
+        else
+        {
             buff = g_strdup_printf("%.3f km/sec", sat->range_rate);
+        }
         break;
     case TWO_SAT_FIELD_NEXT_EVENT:
         if(sat->aos > sat->los)
@@ -1097,9 +1117,11 @@ void gtk_two_sat_update_second(GtkWidget * widget)
     }
     else
     {
+        /*
         sat_log_log(SAT_LOG_LEVEL_DEBUG,
                     "%s %d: counter < refresh rate condition passed",
                     __FILE__, __LINE__);
+        */
         // Calculate here to avoid double calc
         if ((tsat->flags & TWO_SAT_FLAG_RA) || (tsat->flags & TWO_SAT_FLAG_DEC))
         {

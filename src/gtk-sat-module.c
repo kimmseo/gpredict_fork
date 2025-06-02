@@ -1507,6 +1507,14 @@ static void reload_sats_in_child(GtkWidget * widget, GtkSatModule * module)
     {
         /* NOP */
     }
+    else if (IS_GTK_SECOND_SAT(G_OBJECT(widget)))
+    {
+        gtk_second_sat_reload_sats(widget, module->satellites);
+    }
+    else if (IS_GTK_TWO_SAT(G_OBJECT(widget)))
+    {
+        gtk_two_sat_reload_sats(widget, module->satellites);
+    }
     else
     {
         sat_log_log(SAT_LOG_LEVEL_ERROR,
