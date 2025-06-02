@@ -65,9 +65,9 @@ gdouble dist_calc_driver (gdouble sat1_posx, gdouble sat1_posy, gdouble sat1_pos
 {
     gdouble dist;
 
-    dist = sqrt( pow((sat1_posx - sat2_posx), 2)
-                + pow((sat1_posy - sat2_posy), 2)
-                + pow((sat1_posz - sat2_posz), 2) );
+    dist = sqrt( pow((sat2_posx - sat1_posx), 2)
+                + pow((sat2_posy - sat1_posy), 2)
+                + pow((sat2_posz - sat1_posz), 2) );
     
     return dist;
 }
@@ -98,11 +98,13 @@ gdouble haversine_dist_calc_driver(gdouble sat1_lat, gdouble sat1_lon,
 }
 
 // Helper functions
-void compute_magnitude(vector_t *v) {
+void compute_magnitude(vector_t *v)
+{
     v->w = sqrt(v->x * v->x + v->y * v->y + v->z * v->z);
 }
 
-vector_t cross_product(const vector_t *a, const vector_t *b) {
+vector_t cross_product(const vector_t *a, const vector_t *b)
+{
     vector_t result;
     result.x = a->y * b->z - a->z * b->y;
     result.y = a->z * b->x - a->x * b->z;
@@ -111,35 +113,52 @@ vector_t cross_product(const vector_t *a, const vector_t *b) {
     return result;
 }
 
+gdouble dot_product(const vector_t *a, const vector_t *b)
+{
+    double result;
+    result = (a->x * b->x) + (a->y * b->y) + (a->z * b->z);
+    return result;
+}
+
 // Check if the straight line between two satellites collide with Earth
 // We assume radius of Earth + 20km of atmosphere is the zone the laser
 // cannot pass through.
-// @param dist: distance between two satellites
-gboolean check_collision (sat_t *sat1, sat_t *sat2)
+// Return value true means los is clear (sat to sat link can be established)
+// Return value false means los is not clear (sat to sat link blocked by Earth)
+gboolean is_los_clear(sat_t *sat1, sat_t *sat2)
 {
     gboolean result;
 
-    // get vector Sat A to Sat B
-    vector_t point = {sat1->pos.x, sat1->pos.y, sat1->pos.z, 0.0};
+    vector_t sat1_vector = {sat1->pos.x, sat1->pos.y, sat1->pos.z, sat1->pos.w};
+    vector_t sat2_vector = {sat2->pos.x, sat2->pos.y, sat2->pos.z, sat2->pos.w};
+
     vector_t a_to_b;
-    a_to_b.x = (sat2->pos.x) - (sat1->pos.x);
-    a_to_b.y = (sat2->pos.y) - (sat1->pos.y);
-    a_to_b.z = (sat2->pos.z) - (sat1->pos.z);
+    a_to_b.x = sat2_vector.x - sat1_vector.x;
+    a_to_b.y = sat2_vector.y - sat1_vector.y;
+    a_to_b.z = sat2_vector.z - sat1_vector.z;
     a_to_b.w = 0.0;
+    compute_magnitude(&a_to_b);
 
-    compute_magnitude(&point);
-    compute_magnitude(&direction);
+    gdouble a = dot_product(&a_to_b, &a_to_b);
+    gdouble b = 2 * dot_product(&sat1_vector, &a_to_b);
+    gdouble c = dot_product(&sat1_vector, &sat1_vector) -
+                (EARTH_RADIUS + 20) * (EARTH_RADIUS + 20);
+    
+    gdouble discriminant = b * b - 4 * a * c;
 
-    vector_t cross = cross_product(&point, &direction);
-
-    double shortest_dist = cross.w / a_to_b.w;
-
-    if (shortest_dist > (EARTH_RADIUS + 20))
+    if (discriminant < 0)
     {
-        return True;
+        // No intersection
+        return TRUE;
     }
     else
     {
-        return False;
+        // Compute intersection points
+        double sqrt_disc = sqrt(discriminant);
+        double t1 = (-b - sqrt_disc) / (2 * a);
+        double t2 = (-b + sqrt_disc) / (2 * a);
+
+        // If either t1 or t2 is between 0 and 1, los is not clear
+        return !(t1 >= 0.0 && t1 <= 1.0) && !(t2 >= 0.0 && t2 <= 1.0);
     }
 }
