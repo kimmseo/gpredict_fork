@@ -31,6 +31,7 @@
 #include "sat-pref-interfaces.h"
 #include "sat-pref-modules.h"
 #include "sat-pref-predict.h"
+#include "sat-log.h"
 
 /** Columns in the icon list */
 enum {
@@ -74,6 +75,8 @@ void sat_pref_run()
     GtkWidget      *genbut, *modbut, *ifbut, *predbut;
     gchar          *iconfile;
     gint            response;
+
+    sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s %d: sat_pref_run() called", __FILE__, __LINE__);
 
     /* Create notebook and add individual pages.
        The individual pages will need the GKeyFile

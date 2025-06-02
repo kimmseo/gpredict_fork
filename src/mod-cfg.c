@@ -844,19 +844,30 @@ static void edit_advanced_settings(GtkDialog * parent, GKeyFile * cfgdata)
     GtkWidget      *contents;
     gchar          *icon;       /* window icon file name */
 
+    //sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s %d: edit_advanced_settings() called", __FILE__, __LINE__);
+
+
     dialog = gtk_dialog_new_with_buttons(_("Module properties"),
                                          GTK_WINDOW(parent),
                                          GTK_DIALOG_MODAL |
                                          GTK_DIALOG_DESTROY_WITH_PARENT,
                                          "_Cancel", GTK_RESPONSE_REJECT,
                                          "_OK", GTK_RESPONSE_ACCEPT, NULL);
+    
+    // OK
+    //sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s %d: Breakpoint OK", __FILE__, __LINE__);
 
     /* window icon */
     icon = icon_file_name("gpredict-sat-pref.png");
     if (g_file_test(icon, G_FILE_TEST_EXISTS))
         gtk_window_set_icon_from_file(GTK_WINDOW(dialog), icon, NULL);
+    
+    // OK
+    //sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s %d: Breakpoint OK", __FILE__, __LINE__);
 
+    // Below line bugged
     contents = sat_pref_modules_create(cfgdata);
+    sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s %d: Breakpoint OK", __FILE__, __LINE__);
     gtk_widget_show_all(contents);
 
     gtk_box_pack_start(GTK_BOX

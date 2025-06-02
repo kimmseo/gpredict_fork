@@ -39,6 +39,8 @@
 #include "sat-pref-refresh.h"
 #include "sat-pref-single-sat.h"
 #include "sat-pref-second-sat.h"
+#include "sat-pref-two-sat.h"
+#include "sat-log.h"
 
 
 /**
@@ -81,10 +83,11 @@ GtkWidget      *sat_pref_modules_create(GKeyFile * cfg)
                              gtk_label_new(_("Single Sat View")));
     gtk_notebook_append_page(GTK_NOTEBOOK(nbook),
                              sat_pref_second_sat_create(cfg),
-                             gtk_label_new("Second Sat View"));
+                             gtk_label_new(_("Second Sat View")));
+    sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s %d: Breakpoint OK", __FILE__, __LINE__);
     gtk_notebook_append_page(GTK_NOTEBOOK(nbook),
                              sat_pref_two_sat_create(cfg),
-                             gtk_label_new("Two Sat View"));
+                             gtk_label_new(_("Two Sat View")));
 
     return nbook;
 }
