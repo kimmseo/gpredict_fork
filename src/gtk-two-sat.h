@@ -2,7 +2,7 @@
 #define __GTK_TWO_SAT_H__ 1
 
 #include <glib.h>
-#include <glib.gi18n.h>
+#include <glib/gi18n.h>
 #include <gtk/gtk.h>
 
 #include "gtk-sat-data.h"
@@ -90,9 +90,9 @@ struct _gtk_two_sat {
     GtkWidget       *header2;       /*<! Header label for second satellite */
 
     /*<! GtkLabels displaying the data for first satellite */
-    GtkWidget       *labels[TWO_SAT_FIELD_NUMBER];
+    GtkWidget       *labels1[TWO_SAT_FIELD_NUMBER];
     /*<! GtkLabels displaying the data for second satellite */
-    //GtkWidget       *labels2[TWO_SAT_FIELD_NUMBER];
+    GtkWidget       *labels2[TWO_SAT_FIELD_NUMBER];
     // above may be needed, keep for debugging ideas
 
     GtkWidget       *swin;          /*<! Scrolled window for first satellite */
@@ -116,17 +116,19 @@ struct _gtk_two_sat {
     gdouble         tstamp;
 
     /* Update function */
-    void        (*update) (GtkWidget * widget);
+    void        (*update_first) (GtkWidget * widget);
+    void        (*update_second) (GtkWidget * widget);
 };
 
 struct _GtkTwoSatClass {
     GtkBoxClass     parent_class;
-}
+};
 
 GType       gtk_two_sat_get_type(void);
-GtkWidget  *gtk_two_sat_new(GKeyFile * cfgdata, GHasTable * sats,
+GtkWidget  *gtk_two_sat_new(GKeyFile * cfgdata, GHashTable * sats,
                             qth_t * qth, guint32 fields);
-void        gtk_two_sat_update(GtkWidget * widget);
+void        gtk_two_sat_update_first(GtkWidget * widget);
+void        gtk_two_sat_update_second(GtkWidget * widget);
 void        gtk_two_sat_reconf(GtkWidget * widget, GKeyFile * newcfg,
                                GHashTable * sats, qth_t * qth, gboolean local);
 

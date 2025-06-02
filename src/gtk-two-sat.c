@@ -81,15 +81,15 @@ static GtkBoxClass *parent_class = NULL;
 
 static void gtk_two_sat_destroy(GtkWidget * widget)
 {
-    GtkTwoSat   *ssat = GTK_TWO_SAT(widget);
-    sat_t       *sat1 = SAT(g_slist_nth_data(ssat->sats, ssat->selected1));
-    sat_t       *sat2 = SAT(g_slist_nth_data(ssat->sats, ssat->selected2));
+    GtkTwoSat   *tsat = GTK_TWO_SAT(widget);
+    sat_t       *sat1 = SAT(g_slist_nth_data(tsat->sats, tsat->selected1));
+    sat_t       *sat2 = SAT(g_slist_nth_data(tsat->sats, tsat->selected2));
 
     if (sat1 != NULL || sat2 != NULL)
     {
-        g_key_file_set_integer(ssat->cfgdata, MOD_CFG_TWO_SAT_SECTION,
+        g_key_file_set_integer(tsat->cfgdata, MOD_CFG_TWO_SAT_SECTION,
                                MOD_CFG_TWO_SAT_SELECT_FIRST, sat1->tle.catnr);
-        g_key_file_set_integer(ssat->cfgdata, MOD_CFG_SINGLE_SAT_SECTION,
+        g_key_file_set_integer(tsat->cfgdata, MOD_CFG_SINGLE_SAT_SECTION,
                                MOD_CFG_TWO_SAT_SELECT_SECOND, sat2->tle.catnr);
     }
 
@@ -133,25 +133,11 @@ static void update_field_first(GtkTwoSat * tsat, guint i)
     {
         sat_log_log(SAT_LOG_LEVEL_ERROR,
                     _("%s:%d: Can not update invisible field (I:%d F:%d)"),
-                    __FILE__, __LINE__, i, ssat->flags);
+                    __FILE__, __LINE__, i, tsat->flags);
         return;
     }
 
-    // Get selected satellite
-    if (selection == 1)
-    {
-        sat = SAT(g_slist_nth_data(tsat->sats, tsat->selected1));
-    }
-    else if (selection == 2)
-    {
-        sat = SAT(g_slist_nth_data(tsat->sats, tsat->selected2));
-    }
-    else
-    {
-        sat_log_log(SAT_LOG_LEVEL_ERROR, "%s: %d - selection is invalid (must be either 1 or 2).",
-                    __FILE__, __LINE__);
-        return;
-    }
+    sat = SAT(g_slist_nth_data(tsat->sats, tsat->selected1));
     if (!sat)
     {
         sat_log_log(SAT_LOG_LEVEL_ERROR, "%s: %d - Cannot update non-existing sat",
@@ -205,7 +191,7 @@ static void update_field_first(GtkTwoSat * tsat, guint i)
             buff = g_strdup_printf("%.3f km/sec", sat->range_rate);
         break;
     case TWO_SAT_FIELD_NEXT_EVENT:
-        if(sat->aos > sat->lows)
+        if(sat->aos > sat->los)
         {
             // Next event is LOS
             number = sat->los;
@@ -333,7 +319,7 @@ static void update_field_first(GtkTwoSat * tsat, guint i)
         }
         else
         {
-            buff = g_strdup_printf(".3f km/sec", sat->velo);
+            buff = g_strdup_printf("%.3f km/sec", sat->velo);
         }
         break;
     case TWO_SAT_FIELD_DOPPLER:
@@ -358,7 +344,7 @@ static void update_field_first(GtkTwoSat * tsat, guint i)
         buff = g_strdup_printf("%ld", sat->orbit);
         break;
     case TWO_SAT_FIELD_VISIBILITY:
-        vis = get_sat_vis(sat, ssat->qth, sat->jul_utc);
+        vis = get_sat_vis(sat, tsat->qth, sat->jul_utc);
         buff = vis_to_str(vis);
         break;
     case TWO_SAT_FIELD_SKR:
@@ -375,7 +361,7 @@ static void update_field_first(GtkTwoSat * tsat, guint i)
 
     if (buff != NULL)
     {
-        gtk_label_set_text(GTK_LABEL(ssat->labels1[i]), buff);
+        gtk_label_set_text(GTK_LABEL(tsat->labels1[i]), buff);
         /*
         sat_log_log(SAT_LOG_LEVEL_DEBUG,
                     ("%s %s: current buff is %s, writing to %d case"), __FILE__,
@@ -404,25 +390,11 @@ static void update_field_second(GtkTwoSat * tsat, guint i)
     {
         sat_log_log(SAT_LOG_LEVEL_ERROR,
                     _("%s:%d: Can not update invisible field (I:%d F:%d)"),
-                    __FILE__, __LINE__, i, ssat->flags);
+                    __FILE__, __LINE__, i, tsat->flags);
         return;
     }
 
-    // Get selected satellite
-    if (selection == 1)
-    {
-        sat = SAT(g_slist_nth_data(tsat->sats, tsat->selected1));
-    }
-    else if (selection == 2)
-    {
-        sat = SAT(g_slist_nth_data(tsat->sats, tsat->selected2));
-    }
-    else
-    {
-        sat_log_log(SAT_LOG_LEVEL_ERROR, "%s: %d - selection is invalid (must be either 1 or 2).",
-                    __FILE__, __LINE__);
-        return;
-    }
+    sat = SAT(g_slist_nth_data(tsat->sats, tsat->selected2));
     if (!sat)
     {
         sat_log_log(SAT_LOG_LEVEL_ERROR, "%s: %d - Cannot update non-existing sat",
@@ -476,7 +448,7 @@ static void update_field_second(GtkTwoSat * tsat, guint i)
             buff = g_strdup_printf("%.3f km/sec", sat->range_rate);
         break;
     case TWO_SAT_FIELD_NEXT_EVENT:
-        if(sat->aos > sat->lows)
+        if(sat->aos > sat->los)
         {
             // Next event is LOS
             number = sat->los;
@@ -604,7 +576,7 @@ static void update_field_second(GtkTwoSat * tsat, guint i)
         }
         else
         {
-            buff = g_strdup_printf(".3f km/sec", sat->velo);
+            buff = g_strdup_printf("%.3f km/sec", sat->velo);
         }
         break;
     case TWO_SAT_FIELD_DOPPLER:
@@ -629,7 +601,7 @@ static void update_field_second(GtkTwoSat * tsat, guint i)
         buff = g_strdup_printf("%ld", sat->orbit);
         break;
     case TWO_SAT_FIELD_VISIBILITY:
-        vis = get_sat_vis(sat, ssat->qth, sat->jul_utc);
+        vis = get_sat_vis(sat, tsat->qth, sat->jul_utc);
         buff = vis_to_str(vis);
         break;
     case TWO_SAT_FIELD_SKR:
@@ -646,7 +618,7 @@ static void update_field_second(GtkTwoSat * tsat, guint i)
 
     if (buff != NULL)
     {
-        gtk_label_set_text(GTK_LABEL(ssat->labels2[i]), buff);
+        gtk_label_set_text(GTK_LABEL(tsat->labels2[i]), buff);
         /*
         sat_log_log(SAT_LOG_LEVEL_DEBUG,
                     ("%s %s: current buff is %s, writing to %d case"), __FILE__,
@@ -724,7 +696,7 @@ static void Calculate_RADec(sat_t * sat, qth_t * qth, obs_astro_t * obs_set)
 // Select first satellite from drop down menu
 static void select_first_satellite(GtkWidget * menuitem, gpointer data)
 {
-    GtkTwoSat      *ssat = GTK_TWO_SAT(data);
+    GtkTwoSat      *tsat = GTK_TWO_SAT(data);
     guint           i =
         GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(menuitem), "index"));
     gchar          *title;
@@ -734,12 +706,12 @@ static void select_first_satellite(GtkWidget * menuitem, gpointer data)
     // make a new selection when the received menuitem is selected
     if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
     {
-        ssat->selected1 = i;
+        tsat->selected1 = i;
 
-        sat = SAT(g_slist_nth_data(ssat->sats, i));
+        sat = SAT(g_slist_nth_data(tsat->sats, i));
 
         title = g_markup_printf_escaped("<b>First Satellite: %s</b>", sat->nickname);
-        gtk_label_set_markup(GTK_LABEL(ssat->header1), title);
+        gtk_label_set_markup(GTK_LABEL(tsat->header1), title);
         g_free(title);
     }
 }
@@ -747,7 +719,7 @@ static void select_first_satellite(GtkWidget * menuitem, gpointer data)
 // Select second satellite from drop down menu
 static void select_second_satellite(GtkWidget * menuitem, gpointer data)
 {
-    GtkTwoSat      *ssat = GTK_TWO_SAT(data);
+    GtkTwoSat      *tsat = GTK_TWO_SAT(data);
     guint           i =
         GPOINTER_TO_UINT(g_object_get_data(G_OBJECT(menuitem), "index"));
     gchar          *title;
@@ -757,12 +729,12 @@ static void select_second_satellite(GtkWidget * menuitem, gpointer data)
     // make a new selection when the received menuitem is selected
     if (gtk_check_menu_item_get_active(GTK_CHECK_MENU_ITEM(menuitem)))
     {
-        ssat->selected2 = i;
+        tsat->selected2 = i;
 
-        sat = SAT(g_slist_nth_data(ssat->sats, i));
+        sat = SAT(g_slist_nth_data(tsat->sats, i));
 
         title = g_markup_printf_escaped("<b>Second Satellite: %s</b>", sat->nickname);
-        gtk_label_set_markup(GTK_LABEL(ssat->header2), title);
+        gtk_label_set_markup(GTK_LABEL(tsat->header2), title);
         g_free(title);
     }
 }
@@ -780,8 +752,8 @@ static void gtk_two_sat_popup_first_cb(GtkWidget * button, gpointer data)
     sat_t       *sati;      // Used to create list of satellites
     guint       i, n;
 
-    sat = SAT(g_slist_nth_data(two_sat->sats, two_sat->selected1));
-    if (sat == NULL){
+    sat1 = SAT(g_slist_nth_data(two_sat->sats, two_sat->selected1));
+    if (sat1 == NULL){
         sat_log_log(SAT_LOG_LEVEL_ERROR, "%s %d: Sat is NULL", __FILE__, __LINE__);
         return;
     }
@@ -794,7 +766,7 @@ static void gtk_two_sat_popup_first_cb(GtkWidget * button, gpointer data)
     menuitem = gtk_menu_item_new();
     label = gtk_label_new(NULL);
     g_object_set(label, "xalign", 0.0f, "yalign", 0.5f, NULL);
-    buff = g_markup_printf_escacped("<b>%s</b>", sat->nickname);
+    buff = g_markup_printf_escaped("<b>%s</b>", sat1->nickname);
     gtk_label_set_markup(GTK_LABEL(label), buff);
     g_free(buff);
     gtk_container_add(GTK_CONTAINER(menuitem), label);
@@ -815,7 +787,7 @@ static void gtk_two_sat_popup_first_cb(GtkWidget * button, gpointer data)
 
     // Separator
     menuitem = gtk_separator_menu_item_new();
-    gtk_menu_shell_append(GTK_MNEU_SHELL(menu), menuitem);
+    gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
 
     // Select sat
     for (i = 0; i< n; i++)
@@ -860,8 +832,8 @@ static void gtk_two_sat_popup_second_cb(GtkWidget * button, gpointer data)
     sat_t       *sati;      // used to create list of satellites
     guint       i, n;
 
-    sat = SAT(g_slist_nth_data(two_sat->sats, two_sat->selected2));
-    if (sat == NULL)
+    sat2 = SAT(g_slist_nth_data(two_sat->sats, two_sat->selected2));
+    if (sat2 == NULL)
     {
         sat_log_log(SAT_LOG_LEVEL_ERROR, "%s %d: Sat is NULL", __FILE__, __LINE__);
         return;
@@ -875,7 +847,7 @@ static void gtk_two_sat_popup_second_cb(GtkWidget * button, gpointer data)
     menuitem = gtk_menu_item_new();
     label = gtk_label_new(NULL);
     g_object_set(label, "xalign", 0.0f, "yalign", 0.5f, NULL);
-    buff = g_markup_printf_escaped("<b>%s</b>", sat->nickname);
+    buff = g_markup_printf_escaped("<b>%s</b>", sat2->nickname);
     gtk_label_set_markup(GTK_LABEL(label), buff);
     g_free(buff);
     gtk_container_add(GTK_CONTAINER(menuitem), label);
@@ -892,7 +864,7 @@ static void gtk_two_sat_popup_second_cb(GtkWidget * button, gpointer data)
     gtk_menu_shell_append(GTK_MENU_SHELL(menu), menuitem);
 
     // Add the menu items for current, next and future passes
-    add_pass_menu_items(menu, sat, two_sat->qth, &two_sat->tstamp, data);
+    add_pass_menu_items(menu, sat2, two_sat->qth, &two_sat->tstamp, data);
 
     // Separator
     menuitem = gtk_separator_menu_item_new();
@@ -901,7 +873,7 @@ static void gtk_two_sat_popup_second_cb(GtkWidget * button, gpointer data)
     // Select sat
     for (i = 0; i < n; i++)
     {
-        sati = SAT(g_list_nth_data(two_sat->sats, i));
+        sati = SAT(g_slist_nth_data(two_sat->sats, i));
 
         menuitem = gtk_radio_menu_item_new_with_label(group, sati->nickname);
         group = gtk_radio_menu_item_get_group(GTK_RADIO_MENU_ITEM(menuitem));
@@ -956,7 +928,7 @@ void gtk_two_sat_reconf(GtkWidget * widget, GKeyFile * newcfg, GHashTable * sats
 
     // Get visible firleds from new configuration
     fields = mod_cfg_get_int(newcfg, MOD_CFG_TWO_SAT_SECTION, 
-                             MOD_CFG_TWO_SAT_FIELDS, SAT_CFG_TWO_SAT_FIELDS);
+                             MOD_CFG_TWO_SAT_FIELDS, SAT_CFG_INT_TWO_SAT_FIELDS);
 
     if (fields != GTK_TWO_SAT(widget)->flags)
     {
@@ -984,21 +956,21 @@ void gtk_two_sat_reconf(GtkWidget * widget, GKeyFile * newcfg, GHashTable * sats
 // Select new first satellite
 void gtk_two_sat_select_first_sat(GtkWidget * two_sat, gint catnum)
 {
-    GtkTwoSat   *ssat = GTK_TWO_SAT(two_sat);
+    GtkTwoSat   *tsat = GTK_TWO_SAT(two_sat);
     sat_t       *sat = NULL;
     gchar       *title;
     gboolean     foundsat = FALSE;
     gint         i, n;
 
     // Find satellite with catnum
-    n = g_slist_length(ssat->sats);
+    n = g_slist_length(tsat->sats);
     for (i = 0; i < n; i++)
     {
-        sat = SAT(g_slist_nth_data(ssat->sats, i));
+        sat = SAT(g_slist_nth_data(tsat->sats, i));
         if (sat->tle.catnr == catnum)
         {
             // Found satellite
-            ssat->selected1 = i;
+            tsat->selected1 = i;
             foundsat = TRUE;
 
             // Exit loop
@@ -1014,28 +986,28 @@ void gtk_two_sat_select_first_sat(GtkWidget * two_sat, gint catnum)
         return;
     }
     title = g_markup_printf_escaped("<b>First Satellite: %s</b>", sat->nickname);
-    gtk_label_set_markup(GTK_LABEL(ssat->header), title);
+    gtk_label_set_markup(GTK_LABEL(tsat->header1), title);
     g_free(title);
 }
 
 // Select new second satellite
 void gtk_two_sat_select_second_sat(GtkWidget * two_sat, gint catnum)
 {
-    GtkTwoSat   *ssat = GTK_TWO_SAT(two_sat);
+    GtkTwoSat   *tsat = GTK_TWO_SAT(two_sat);
     sat_t       *sat = NULL;
     gchar       *title;
     gboolean     foundsat = FALSE;
     gint         i, n;
 
     // Find satellite with catnum
-    n = g_slist_length(ssat->sats);
+    n = g_slist_length(tsat->sats);
     for (i = 0; i < n; i++)
     {
-        sat = SAT(g_slist_nth_data(ssat->sats, i));
+        sat = SAT(g_slist_nth_data(tsat->sats, i));
         if (sat->tle.catnr == catnum)
         {
             // Found satellite
-            ssat->selected2 = i;
+            tsat->selected2 = i;
             foundsat = TRUE;
 
             // Exit loop
@@ -1051,30 +1023,30 @@ void gtk_two_sat_select_second_sat(GtkWidget * two_sat, gint catnum)
         return;
     }
     title = g_markup_printf_escaped("<b>Second Satellite: %s</b>", sat->nickname);
-    gtk_label_set_markup(GTK_LABEL(ssat->header), title);
+    gtk_label_set_markup(GTK_LABEL(tsat->header2), title);
     g_free(title);
 }
 
 // Update satellites for first satellite
 void gtk_two_sat_update_first(GtkWidget * widget)
 {
-    GtkTwoSat   *ssat = GTK_TWO_SAT(widget);
+    GtkTwoSat   *tsat = GTK_TWO_SAT(widget);
     guint       i;
 
     // Do some sanity checks
-    if ((ssat == NULL) || (!IS_GTK_TWO_SAT(ssat)))
+    if ((tsat == NULL) || (!IS_GTK_TWO_SAT(tsat)))
     {
         sat_log_log(SAT_LOG_LEVEL_ERROR, _("%s: Invald GtkTWoSat!"), __func__);
         return;
     }
 
     // Check refresh rate
-    if (ssat->counter < ssat->refresh)
+    if (tsat->counter < tsat->refresh)
     {
-        ssat->counter++;
+        tsat->counter++;
         sat_log_log(SAT_LOG_LEVEL_DEBUG,
                     "%s %d: counter is %d, refresh is %d",
-                    __FILE__, __LINE__, ssat->counter, ssat->refresh);
+                    __FILE__, __LINE__, tsat->counter, tsat->refresh);
     }
     else
     {
@@ -1082,46 +1054,46 @@ void gtk_two_sat_update_first(GtkWidget * widget)
                     "%s %d: counter < refresh rate condition passed",
                     __FILE__, __LINE__);
         // Calculate here to avoid double calc
-        if ((ssat->flags & TWO_SAT_FLAG_RA) || (ssat->flags & TWO_SAT_FLAG_DEC))
+        if ((tsat->flags & TWO_SAT_FLAG_RA) || (tsat->flags & TWO_SAT_FLAG_DEC))
         {
             obs_astro_t     astro;
-            sat_t           *sat = SAT(g_slist_nth_data(ssat->sats, ssat->selected1));
+            sat_t           *sat = SAT(g_slist_nth_data(tsat->sats, tsat->selected1));
 
-            Calculate_RADec(sat, sat->qth, &astro);
-            sat->ra = Degress(astra.ra);
+            Calculate_RADec(sat, tsat->qth, &astro);
+            sat->ra = Degrees(astro.ra);
             sat->dec = Degrees(astro.dec);
         }
 
         // Update visible fields one by one
         for (i = 0; i < TWO_SAT_FIELD_NUMBER; i++)
         {
-            if (ssat->flags & (1 << i))
-                update_field_first(ssat, i);
+            if (tsat->flags & (1 << i))
+                update_field_first(tsat, i);
         }
-        ssat->counter = 1;
+        tsat->counter = 1;
     }
 }
 
 // Update satellites for second satellite
 void gtk_two_sat_update_second(GtkWidget * widget)
 {
-    GtkTwoSat   *ssat = GTK_TWO_SAT(widget);
+    GtkTwoSat   *tsat = GTK_TWO_SAT(widget);
     guint       i;
 
     // Do some sanity checks
-    if ((ssat == NULL) || (!IS_GTK_TWO_SAT(ssat)))
+    if ((tsat == NULL) || (!IS_GTK_TWO_SAT(tsat)))
     {
         sat_log_log(SAT_LOG_LEVEL_ERROR, _("%s: Invald GtkTWoSat!"), __func__);
         return;
     }
 
     // Check refresh rate
-    if (ssat->counter < ssat->refresh)
+    if (tsat->counter < tsat->refresh)
     {
-        ssat->counter++;
+        tsat->counter++;
         sat_log_log(SAT_LOG_LEVEL_DEBUG,
                     "%s %d: counter is %d, refresh is %d",
-                    __FILE__, __LINE__, ssat->counter, ssat->refresh);
+                    __FILE__, __LINE__, tsat->counter, tsat->refresh);
     }
     else
     {
@@ -1129,23 +1101,23 @@ void gtk_two_sat_update_second(GtkWidget * widget)
                     "%s %d: counter < refresh rate condition passed",
                     __FILE__, __LINE__);
         // Calculate here to avoid double calc
-        if ((ssat->flags & TWO_SAT_FLAG_RA) || (ssat->flags & TWO_SAT_FLAG_DEC))
+        if ((tsat->flags & TWO_SAT_FLAG_RA) || (tsat->flags & TWO_SAT_FLAG_DEC))
         {
             obs_astro_t     astro;
-            sat_t           *sat = SAT(g_slist_nth_data(ssat->sats, ssat->selected2));
+            sat_t           *sat = SAT(g_slist_nth_data(tsat->sats, tsat->selected2));
 
-            Calculate_RADec(sat, sat->qth, &astro);
-            sat->ra = Degress(astra.ra);
+            Calculate_RADec(sat, tsat->qth, &astro);
+            sat->ra = Degrees(astro.ra);
             sat->dec = Degrees(astro.dec);
         }
 
         // Update visible fields one by one
         for (i = 0; i < TWO_SAT_FIELD_NUMBER; i++)
         {
-            if (ssat->flags & (1 << i))
-                update_field_second(ssat, i);
+            if (tsat->flags & (1 << i))
+                update_field_second(tsat, i);
         }
-        ssat->counter = 1;
+        tsat->counter = 1;
     }
 }
 
@@ -1192,7 +1164,8 @@ GtkWidget * gtk_two_sat_new(GKeyFile * cfgdata, GHashTable * sats, qth_t * qth,
     gtk_orientable_set_orientation(GTK_ORIENTABLE(widget), GTK_ORIENTATION_VERTICAL);
     two_sat = GTK_TWO_SAT(widget);
 
-    two_sat->update = gtk_two_sat_update;
+    two_sat->update_first = gtk_two_sat_update_first;
+    two_sat->update_second = gtk_two_sat_update_second;
 
     // Read configuration data
     // ;;
@@ -1243,14 +1216,14 @@ GtkWidget * gtk_two_sat_new(GKeyFile * cfgdata, GHashTable * sats, qth_t * qth,
     gtk_box_pack_start(GTK_BOX(hbox), two_sat->popup_button1, FALSE, FALSE, 0);
 
     // Create header for first satellite
-    sat = SAT(g_slist_nth_data(two_sat->sats, 0));
+    sat1 = SAT(g_slist_nth_data(two_sat->sats, 0));
     title1 = g_markup_printf_escaped("<b>First Satellite: %s</b>",
-                                    sat ? sat->nickname : "noname");
-    two_sat->headr = gtk_label_new(NULL);
+                                    sat1 ? sat1->nickname : "noname");
+    two_sat->header1 = gtk_label_new(NULL);
     gtk_label_set_markup(GTK_LABEL(two_sat->header1), title1);
     g_free(title1);
     g_object_set(two_sat->header1, "xalign", 0.0f, "yalign", 0.5f, NULL);
-    gtk_box_pack_start(GTK_BOX(hbox), two_sat->headr1, TRUE, TRUE, 10);
+    gtk_box_pack_start(GTK_BOX(hbox), two_sat->header1, TRUE, TRUE, 10);
 
     gtk_box_pack_start(GTK_BOX(widget), hbox, FALSE, FALSE, 0);
 
@@ -1279,7 +1252,7 @@ GtkWidget * gtk_two_sat_new(GKeyFile * cfgdata, GHashTable * sats, qth_t * qth,
             gtk_widget_set_tooltip_text(label2, TWO_SAT_FIELD_HINT[i]);
 
             label1 = gtk_label_new(":");
-            gtk_grid_attach(GTK_GRID(two_sat->table), label1, 1, i, 1, 1);
+            gtk_grid_attach(GTK_GRID(two_sat->table1), label1, 1, i, 1, 1);
         }
         else
         {
@@ -1297,10 +1270,10 @@ GtkWidget * gtk_two_sat_new(GKeyFile * cfgdata, GHashTable * sats, qth_t * qth,
     gtk_box_pack_start(GTK_BOX(hbox), two_sat->popup_button2, FALSE, FALSE, 0);
 
     // Create header for second satellite
-    sat = SAT(g_slist_nth_data(two_sat->saats, 0));
+    sat2 = SAT(g_slist_nth_data(two_sat->sats, 0));
     title2 = g_markup_printf_escaped("<b>Second Satellite: %s</b>",
-                                    sat ? sat->nickname : "noname");
-    two_sat->header = gtk_label_new(NULL);
+                                    sat2 ? sat2->nickname : "noname");
+    two_sat->header2 = gtk_label_new(NULL);
     gtk_label_set_markup(GTK_LABEL(two_sat->header2), title2);
     g_free(title2);
     g_object_set(two_sat->header2, "xalign", 0.0f, "yalign", 0.5f, NULL);

@@ -44,6 +44,7 @@
 #include "gtk-sat-list.h"
 #include "gtk-single-sat.h"
 #include "gtk-second-sat.h"
+#include "gtk-two-sat.h"
 #include "sat-cfg.h"
 #include "sat-log.h"
 #include "sat-pass-dialogs.h"
@@ -106,6 +107,24 @@
     SECOND_SAT_FLAG_ORBIT |\
     SECOND_SAT_FLAG_VISIBILITY |\
     SECOND_SAT_FLAG_SKR)
+
+#define TWO_SAT_FIELD_DEF (TWO_SAT_FLAG_AZ |\
+    TWO_SAT_FLAG_EL |\
+    TWO_SAT_FLAG_RANGE |\
+    TWO_SAT_FLAG_RANGE_RATE |\
+    TWO_SAT_FLAG_NEXT_EVENT |\
+    TWO_SAT_FLAG_SSP |\
+    TWO_SAT_FLAG_FOOTPRINT |\
+    TWO_SAT_FLAG_ALT |\
+    TWO_SAT_FLAG_VEL |\
+    TWO_SAT_FLAG_DOPPLER |\
+    TWO_SAT_FLAG_LOSS |\
+    TWO_SAT_FLAG_DELAY |\
+    TWO_SAT_FLAG_MA |\
+    TWO_SAT_FLAG_PHASE |\
+    TWO_SAT_FLAG_ORBIT |\
+    TWO_SAT_FLAG_VISIBILITY |\
+    TWO_SAT_FLAG_SKR)
 /* *INDENT-ON* */
 
 /** Structure representing a boolean value */
@@ -167,6 +186,7 @@ sat_cfg_int_t   sat_cfg_int[SAT_CFG_INT_NUM] = {
     {"MODULES", "VIEW_3", GTK_SAT_MOD_VIEW_SINGLE},     /* FIXME */
     /* BELOW LINE NEEDS FIXING, ENABLING IT BREAKS CONFIG */
 //    {"MODULES", "VIEW_4", GTK_SAT_MOD_VIEW_SECOND},     /* FIXME */
+//  {"MODULES", "VIEW_5", GTK_SAT_MOD_VIEW_TWO},        /* FIXME */
     {"GLOBAL", "CURRENT_PAGE", -1},     /* FIXME */
     {"GLOBAL", "WARP", 1},
     {"MODULES", "LIST_REFRESH", 1},
@@ -201,6 +221,10 @@ sat_cfg_int_t   sat_cfg_int[SAT_CFG_INT_NUM] = {
     {"MODULES", "SECOND_SAT_REFRESH", 1},
     {"MODULES", "SECOND_SAT_FIELDS", SECOND_SAT_FIELD_DEF},
     {"MODULES", "SECOND_SAT_SELECTED", 0},
+    {"MODULES", "TWO_SAT_REFRESH", 1},
+    {"MODULES", "TWO_SAT_FIELDS", TWO_SAT_FIELD_DEF},
+    {"MODULES", "TWO_SAT_SELECTED_FIRST", 0},
+    {"MODULES", "TWO_SAT_SELECTED_SECOND", 0},
     {"MODULES", "EVENT_LIST_REFRESH", 1},
     {"PREDICT", "MINIMUM_ELEV", 5},
     {"PREDICT", "NUMBER_OF_PASSES", 10},

@@ -6,6 +6,8 @@
         "gtk-sat-module.h": "c",
         "gtk-sat-module-popup.h": "c",
         "config-keys.h": "c",
-        "mod-cfg-get-param.h": "c"
+        "mod-cfg-get-param.h": "c",
+        "sat-log.h": "c",
+        "gtk-two-sat.h": "c"
     }
 }

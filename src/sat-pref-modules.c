@@ -81,7 +81,10 @@ GtkWidget      *sat_pref_modules_create(GKeyFile * cfg)
                              gtk_label_new(_("Single Sat View")));
     gtk_notebook_append_page(GTK_NOTEBOOK(nbook),
                              sat_pref_second_sat_create(cfg),
-                             gtk_label_new(_("Second Sat View")));
+                             gtk_label_new("Second Sat View"));
+    gtk_notebook_append_page(GTK_NOTEBOOK(nbook),
+                             sat_pref_two_sat_create(cfg),
+                             gtk_label_new("Two Sat View"));
 
     return nbook;
 }
@@ -96,6 +99,7 @@ void sat_pref_modules_cancel(GKeyFile * cfg)
     sat_pref_polar_view_cancel(cfg);
     sat_pref_single_sat_cancel(cfg);
     sat_pref_second_sat_cancel(cfg);
+    sat_pref_two_sat_cancel(cfg);
 }
 
 /** User pressed OK. Any changes should be stored in config. */
@@ -108,4 +112,5 @@ void sat_pref_modules_ok(GKeyFile * cfg)
     sat_pref_polar_view_ok(cfg);
     sat_pref_single_sat_ok(cfg);
     sat_pref_second_sat_ok(cfg);
+    sat_pref_two_sat_ok(cfg);
 }

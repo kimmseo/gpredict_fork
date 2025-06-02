@@ -54,6 +54,7 @@
 #include "gtk-sat-module-tmg.h"
 #include "gtk-single-sat.h"
 #include "gtk-second-sat.h"
+#include "gtk-two-sat.h"
 #include "gtk-sky-glance.h"
 #include "mod-cfg.h"
 #include "mod-cfg-get-param.h"
@@ -403,7 +404,13 @@ static GtkWidget *create_view(GtkSatModule * module, guint num)
         view = gtk_second_sat_new(module->cfgdata,
                                   module->satellites, module->qth, 0);
         //sat_log_log(SAT_LOG_LEVEL_DEBUG, "GtkSecondSat type: %s\n", g_type_name(gtk_second_sat_get_type()));
-        break;     
+        break;
+    
+    case GTK_SAT_MOD_VIEW_TWO:
+        view = gtk_two_sat_new(module->cfgdata,
+                               module->satellites, module->qth, 0);
+        sat_log_log(SAT_LOG_LEVEL_DEBUG, "%s %d: GtkTwoSat case called", __FILE__, __LINE__);
+        break;
 
     default:
         sat_log_log(SAT_LOG_LEVEL_ERROR,
@@ -689,6 +696,13 @@ static void update_child(GtkWidget * child, gdouble tstamp)
     {
         GTK_EVENT_LIST(child)->tstamp = tstamp;
         gtk_event_list_update(child);
+    }
+
+    else if (IS_GTK_TWO_SAT(child))
+    {
+        GTK_TWO_SAT(child)->tstamp = tstamp;
+        gtk_two_sat_update_first(child);
+        gtk_two_sat_update_second(child);
     }
 
     else

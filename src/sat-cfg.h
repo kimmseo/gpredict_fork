@@ -133,6 +133,10 @@ typedef enum {
     SAT_CFG_INT_SECOND_SAT_REFRESH,     /*!< Second-sat refresh rate (cycle). */
     SAT_CFG_INT_SECOND_SAT_FIELDS,      /*!< Second-sat fields. */
     SAT_CFG_INT_SECOND_SAT_SELECT,      /*!< Second-sat selected satellite. */
+    SAT_CFG_INT_TWO_SAT_REFRESH,        /*<! Two-sat refresh rate (cycle). */
+    SAT_CFG_INT_TWO_SAT_FIELDS,         /*<! Two-sat fields. */
+    SAT_CFG_INT_TWO_SAT_SELECT_FIRST,   /*<! Two-sat first selected satellite. */
+    SAT_CFG_INT_TWO_SAT_SELECT_SECOND,  /*<! Two-sat second selected satellite. */
     SAT_CFG_INT_NUM,             /*!< Number of integer parameters. */
 } sat_cfg_int_e;
 
