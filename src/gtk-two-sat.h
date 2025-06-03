@@ -95,7 +95,9 @@ struct _gtk_two_sat {
     GtkWidget       *labels2[TWO_SAT_FIELD_NUMBER];
     // above may be needed, keep for debugging ideas
 
-    GtkWidget       *swin;          /*<! Scrolled window for first satellite */
+    //GtkWidget       *swin1;         /*<! Scrolled window for first satellite */
+    //GtkWidget       *swin2;         /*<! Scrolled window for second satellite */
+    GtkWidget       *swin;          /*<! Scrolled window for satellite */
     GtkWidget       *table1;        /*<! Table for first satellite */
     GtkWidget       *table2;        /*<! Table for second satellite */
 

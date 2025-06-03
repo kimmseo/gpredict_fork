@@ -1174,7 +1174,7 @@ GtkWidget * gtk_two_sat_new(GKeyFile * cfgdata, GHashTable * sats, qth_t * qth,
 {
     GtkWidget * widget;
     GtkTwoSat * two_sat;
-    GtkWidget * hbox;        // Horizontal box for header
+    GtkWidget * hbox1, * hbox2;         // Horizontal box for header
     GtkWidget * label1;
     GtkWidget * label2;
     sat_t *sat1, *sat2;
@@ -1234,8 +1234,8 @@ GtkWidget * gtk_two_sat_new(GKeyFile * cfgdata, GHashTable * sats, qth_t * qth,
                                                      _("Satellite options / shortcuts"));
     g_signal_connect(two_sat->popup_button1, "clicked", G_CALLBACK(gtk_two_sat_popup_first_cb), widget);
 
-    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_box_pack_start(GTK_BOX(hbox), two_sat->popup_button1, FALSE, FALSE, 0);
+    hbox1 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_box_pack_start(GTK_BOX(hbox1), two_sat->popup_button1, FALSE, FALSE, 0);
 
     // Create header for first satellite
     sat1 = SAT(g_slist_nth_data(two_sat->sats, 0));
@@ -1245,9 +1245,9 @@ GtkWidget * gtk_two_sat_new(GKeyFile * cfgdata, GHashTable * sats, qth_t * qth,
     gtk_label_set_markup(GTK_LABEL(two_sat->header1), title1);
     g_free(title1);
     g_object_set(two_sat->header1, "xalign", 0.0f, "yalign", 0.5f, NULL);
-    gtk_box_pack_start(GTK_BOX(hbox), two_sat->header1, TRUE, TRUE, 10);
+    gtk_box_pack_start(GTK_BOX(hbox1), two_sat->header1, TRUE, TRUE, 10);
 
-    gtk_box_pack_start(GTK_BOX(widget), hbox, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(widget), hbox1, FALSE, FALSE, 0);
 
     // Create and initialise table for first satellite
     two_sat->table1 = gtk_grid_new();
@@ -1281,6 +1281,15 @@ GtkWidget * gtk_two_sat_new(GKeyFile * cfgdata, GHashTable * sats, qth_t * qth,
             two_sat->labels1[i] = NULL;
         }
     }
+    
+    /*
+    // Create and initialise scrolled window for first satellite
+    two_sat->swin1 = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(two_sat->swin1),
+                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_container_add(GTK_CONTAINER(two_sat->swin1), two_sat->table1);
+    gtk_box_pack_end(GTK_BOX(widget), two_sat->swin1, TRUE, TRUE, 0);
+    */
 
     // Popup button for second satellite
     two_sat->popup_button2 = gpredict_mini_mod_button("gpredict-mod-popup.png",
@@ -1288,8 +1297,8 @@ GtkWidget * gtk_two_sat_new(GKeyFile * cfgdata, GHashTable * sats, qth_t * qth,
     g_signal_connect(two_sat->popup_button2, "clicked",
                      G_CALLBACK(gtk_two_sat_popup_second_cb), widget);
 
-    hbox = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
-    gtk_box_pack_start(GTK_BOX(hbox), two_sat->popup_button2, FALSE, FALSE, 0);
+    hbox2 = gtk_box_new(GTK_ORIENTATION_HORIZONTAL, 0);
+    gtk_box_pack_start(GTK_BOX(hbox2), two_sat->popup_button2, FALSE, FALSE, 0);
 
     // Create header for second satellite
     sat2 = SAT(g_slist_nth_data(two_sat->sats, 0));
@@ -1299,9 +1308,9 @@ GtkWidget * gtk_two_sat_new(GKeyFile * cfgdata, GHashTable * sats, qth_t * qth,
     gtk_label_set_markup(GTK_LABEL(two_sat->header2), title2);
     g_free(title2);
     g_object_set(two_sat->header2, "xalign", 0.0f, "yalign", 0.5f, NULL);
-    gtk_box_pack_start(GTK_BOX(hbox), two_sat->header2, TRUE, TRUE, 10);
+    gtk_box_pack_start(GTK_BOX(hbox2), two_sat->header2, TRUE, TRUE, 10);
 
-    gtk_box_pack_start(GTK_BOX(widget), hbox, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(widget), hbox2, FALSE, FALSE, 0);
 
     // Create and initialise table for second satellite
     two_sat->table2 = gtk_grid_new();
@@ -1310,6 +1319,7 @@ GtkWidget * gtk_two_sat_new(GKeyFile * cfgdata, GHashTable * sats, qth_t * qth,
     gtk_grid_set_column_spacing(GTK_GRID(two_sat->table2), 5);
 
     // Create and add label widgets for second satellite
+    // TODO: Fix grid attach position
     for (i = 0; i < TWO_SAT_FIELD_NUMBER; i++)
     {
         if (two_sat->flags & (1 << i))
@@ -1336,13 +1346,29 @@ GtkWidget * gtk_two_sat_new(GKeyFile * cfgdata, GHashTable * sats, qth_t * qth,
         }
     }
 
-    // Create and initialise scrolled window
+    /*
+    // Create and initialise scrolled window for second satellite
+    two_sat->swin2 = gtk_scrolled_window_new(NULL, NULL);
+    gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(two_sat->swin2),
+                                   GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
+    gtk_container_add(GTK_CONTAINER(two_sat->swin2), two_sat->table2);
+    gtk_box_pack_end(GTK_BOX(widget), two_sat->swin2, TRUE, TRUE, 0);
+    */
+
+    // Create a box to hold both satellites
+    GtkWidget *tables_box = gtk_box_new(GTK_ORIENTATION_VERTICAL, 10);
+    // Add first and second satellites to the box
+    gtk_box_pack_start(GTK_BOX(tables_box), two_sat->table1, FALSE, FALSE, 0);
+    gtk_box_pack_start(GTK_BOX(tables_box), two_sat->table2, FALSE, FALSE, 0);
+    // Create one scrolled window to wrap the box
     two_sat->swin = gtk_scrolled_window_new(NULL, NULL);
     gtk_scrolled_window_set_policy(GTK_SCROLLED_WINDOW(two_sat->swin),
                                    GTK_POLICY_AUTOMATIC, GTK_POLICY_AUTOMATIC);
-    gtk_container_add(GTK_CONTAINER(two_sat->swin), two_sat->table1);
-    gtk_container_add(GTK_CONTAINER(two_sat->swin), two_sat->table2);
+    // Add the box with tables to the scrolled window
+    gtk_container_add(GTK_CONTAINER(two_sat->swin), tables_box);
+    // Pack the scrolled window into the main layout
     gtk_box_pack_end(GTK_BOX(widget), two_sat->swin, TRUE, TRUE, 0);
+
     gtk_widget_show_all(widget);
 
     if (selectedcatnum1)
